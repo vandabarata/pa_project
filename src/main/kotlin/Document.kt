@@ -1,2 +1,2 @@
-class Document(vararg val docElements: TagElement) {
+class Document(val rootElement: XmlElement) {
 }
