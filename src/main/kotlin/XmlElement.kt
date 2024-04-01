@@ -1,8 +1,19 @@
+/**
+ * Xml element
+ *
+ * @constructor Create empty Xml element
+ */
 sealed interface XmlElement {
     // val tagText: String
     val parent: XmlTag?
 }
 
+/**
+ * Xml tag
+ *
+ * @property parent
+ * @constructor Create empty Xml tag
+ */
 data class XmlTag(
     // override val tagText: String,
     override val parent: XmlTag? = null
@@ -14,6 +25,12 @@ data class XmlTag(
     }
 }
 
+/**
+ * Xml tag content
+ *
+ * @property parent
+ * @constructor Create empty Xml tag content
+ */
 data class XmlTagContent(
     // override val tagText: String,
     override val parent: XmlTag?
