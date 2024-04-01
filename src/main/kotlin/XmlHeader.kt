@@ -26,9 +26,9 @@ data class XmlHeader(private val version: String = "1.0", private val encoding: 
     }
 
     /**
-     * To string
+     * Converts the XmlHeader into a valid XML Prolog.
      *
-     * @return
+     * @return The valid xml format of an XML Prolog, as a String.
      */
     override fun toString(): String = "<?xml version=\"$version\" encoding=\"$encoding\"?>"
 }
