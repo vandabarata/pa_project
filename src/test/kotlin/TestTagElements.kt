@@ -1,4 +1,5 @@
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -7,11 +8,13 @@ import java.io.File
  */
 class TestTagElements {
     private val xmlSampleFile = File("src/test/resources/XmlSampleFromMainProblem")
+
+    // Xml Header Tests
     private val sampleDefaultHeader: String = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 
     /**
      * Tests if the XML Header is correctly generated.
-     * Assesses the string format of it and assesses if:
+     * Assesses the string format of it and checks if:
      * - The default header uses version 1.0 and encoding UTF-8
      * - The user can create a header with a different XML version and encoding
      */
@@ -20,8 +23,18 @@ class TestTagElements {
         val defaultHeader = XmlHeader().toString()
         assertEquals(defaultHeader, sampleDefaultHeader)
 
-        val specificHeader = XmlHeader(version="1.1", encoding="UTF-32").toString()
+        val specificHeader = XmlHeader("1.1", "UTF-32").toString()
         assertEquals(specificHeader, "<?xml version=\"1.1\" encoding=\"UTF-32\"?>")
+    }
+
+    /**
+     * Confirms that a user can't create an XML Header/ Prolog with
+     * an invalid XML version, or an unsupported encoding/ Charset.
+     */
+    @Test
+    fun invalidXmlHeaderShouldThrowException(){
+        assertThrows(IllegalArgumentException::class.java) { XmlHeader(version = "2.0") }
+        assertThrows(IllegalArgumentException::class.java) { XmlHeader(encoding = "something") }
     }
 
 
