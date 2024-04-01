@@ -1,6 +1,5 @@
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.charset.spi.CharsetProvider
+
 
 /**
  * Also known as the XML Prolog, this class represents the Header of any valid XML file.
