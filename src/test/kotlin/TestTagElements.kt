@@ -9,7 +9,8 @@ import java.io.File
 class TestTagElements {
     private val xmlSampleFile = File("src/test/resources/XmlSampleFromMainProblem")
 
-    // Xml Header Tests
+    // ------------------- Tests for XML Header ------------------- \\
+
     private val sampleDefaultHeader: String = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 
     /**
@@ -29,7 +30,7 @@ class TestTagElements {
 
     /**
      * Confirms that a user can't create an XML Header/ Prolog with
-     * an invalid XML version, or an unsupported encoding/ Charset.
+     * an invalid XML version, or an unsupported encoding/ charset.
      */
     @Test
     fun invalidXmlHeaderShouldThrowException(){
@@ -37,5 +38,6 @@ class TestTagElements {
         assertThrows(IllegalArgumentException::class.java) { XmlHeader(encoding = "something") }
     }
 
+    // ------------------- Tests for something else ------------------- \\
 
 }
