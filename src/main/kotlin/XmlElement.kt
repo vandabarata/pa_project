@@ -4,6 +4,7 @@
  * @constructor Create empty Xml element
  */
 sealed interface XmlElement {
+    val name: String
     val parent: XmlTag?
 }
 
@@ -11,11 +12,12 @@ sealed interface XmlElement {
  * Xml tag
  *
  * @property parent
- * @constructor Create empty Xml tag
+ * @constructor
  */
 data class XmlTag(
-    val tagAttributes: MutableList<String>? = null,
-    override val parent: XmlTag? = null
+    override val name: String,
+    override val parent: XmlTag? = null,
+    val tagAttributes: MutableMap<String, String>? = null
 ) : XmlElement {
     val children: MutableList<XmlElement> = mutableListOf()
 
@@ -27,13 +29,14 @@ data class XmlTag(
 /**
  * This class represents the XML tag content.
  * This is basically the textual content of each tag, and it's considered the leaf element.
- * This can never have other children.
+ * This can never have other children elements.
  *
- * @property parent The tag of which this content belongs to.
- * @constructor Create empty Xml tag content
+ * @property name The text to be presented as the tag content.
+ * @property parent The tag which this content belongs to.
+ * @constructor Adds this tag content to an existing tag or nested tags (parent element(s)).
  */
 data class XmlTagContent(
-    val tagText: String,
+    override val name: String,
     override val parent: XmlTag?
 ) : XmlElement {
 

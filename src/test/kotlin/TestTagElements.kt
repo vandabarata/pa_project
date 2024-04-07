@@ -1,5 +1,4 @@
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -38,6 +37,27 @@ class TestTagElements {
         assertThrows(IllegalArgumentException::class.java) { XmlHeader(encoding = "something") }
     }
 
-    // ------------------- Tests for something else ------------------- \\
+    // ------------------- Tests for Adding and Removing Tags ------------------- \\
+
+    @Test
+    fun tagsShouldCreatedCorrectly() {
+        // assert that an individual tag is created with the correct name
+        val parentTag = XmlTag("parentTag")
+        assertEquals("parentTag", parentTag.name)
+
+        // assert that another tag can be created and be the first tag's child tag
+        val childTag = XmlTag("childTag", parentTag)
+        assertEquals("childTag", childTag.name)
+        assertEquals(parentTag.name, childTag.parent?.name)
+
+        // assert that the parent tag now has the right child tag associated
+        assertEquals(childTag.name, parentTag.children[0].name)
+
+        // confirm that the children list grows correctly when adding another child tag
+        val anotherChildTag = XmlTag("anotherChildTag", parentTag)
+        assertEquals(anotherChildTag.name, parentTag.children[1].name)
+        // also confirm that the new tag's parent isn't its sibling tag
+        assertNotEquals(childTag.name, anotherChildTag.parent?.name)
+    }
 
 }
