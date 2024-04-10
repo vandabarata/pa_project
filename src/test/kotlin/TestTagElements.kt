@@ -37,10 +37,10 @@ class TestTagElements {
         assertThrows(IllegalArgumentException::class.java) { XmlHeader(encoding = "something") }
     }
 
-    // ------------------- Tests for Adding and Removing Tags ------------------- \\
+    // ------------------- Tests for Nesting Tags ------------------- \\
 
     @Test
-    fun tagsShouldCreatedCorrectly() {
+    fun tagsShouldCreatedAndNestedCorrectly() {
         // assert that an individual tag is created with the correct name
         val parentTag = XmlTag("parentTag")
         assertEquals("parentTag", parentTag.name)
@@ -58,6 +58,26 @@ class TestTagElements {
         assertEquals(anotherChildTag.name, parentTag.children[1].name)
         // also confirm that the new tag's parent isn't its sibling tag
         assertNotEquals(childTag.name, anotherChildTag.parent?.name)
+
+        // assert correct nesting of tags
+        val childChildTag = XmlTag("deepestTag", childTag)
+        assertEquals("parentTag", childChildTag.parent?.parent?.name)
+    }
+
+    @Test
+    fun tagsShouldBeCorrectlyAddedToDoc() {
+        val rootTag = XmlTag("rootTag")
+        val childTag = XmlTag("child", rootTag)
+        val deepestTag = XmlTag("deepTag", childTag)
+
+        val xmlDoc = Document(XmlHeader(), rootTag)
+        assertEquals(rootTag.name, xmlDoc.docRoot.name)
+        assertEquals(childTag.name, xmlDoc.docRoot.children[0].name)
+        println(xmlDoc.docRoot.children[0]::class)
+        // assertEquals(deepestTag.name, (xmlDoc.docRoot.children[0]).children[0].name)
+
+
+
     }
 
 }

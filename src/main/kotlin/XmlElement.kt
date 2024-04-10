@@ -24,6 +24,12 @@ data class XmlTag(
     init {
         parent?.children?.add(this)
     }
+
+//    override fun toString(): String = """Tag Name: $name
+//        |${if (parent != null) "Parent: $parent" else ""}
+//        |${if (children.isNotEmpty()) "Children: $children" else ""}
+//        |${if (tagAttributes.isNullOrEmpty()) "" else "Attributes: $tagAttributes"}
+//        |""".trimMargin()
 }
 
 /**
