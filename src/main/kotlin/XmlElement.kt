@@ -1,15 +1,27 @@
 /**
- * Xml element
+ * TODO
  *
- * @constructor Create empty Xml element
+ * @constructor
  */
 sealed interface XmlElement {
     val name: String
     val parent: XmlTag?
+
+    /**
+     * TODO
+     *
+     * @param visitor
+     * @receiver
+     */
+    fun accept(visitor: (XmlElement) -> Boolean) {
+        visitor(this)
+    }
+
+
 }
 
 /**
- * Xml tag
+ * TODO
  *
  * @property parent
  * @constructor
@@ -25,11 +37,33 @@ data class XmlTag(
         parent?.children?.add(this)
     }
 
-//    override fun toString(): String = """Tag Name: $name
-//        |${if (parent != null) "Parent: $parent" else ""}
-//        |${if (children.isNotEmpty()) "Children: $children" else ""}
-//        |${if (tagAttributes.isNullOrEmpty()) "" else "Attributes: $tagAttributes"}
-//        |""".trimMargin()
+    /**
+     * TODO
+     *
+     * @param visitor
+     * @receiver
+     */
+    override fun accept(visitor: (XmlElement) -> Boolean) {
+        if (visitor(this))
+            children.forEach {
+                it.accept(visitor)
+            }
+    }
+
+    /**
+     * TODO
+     *
+     * @return
+     */
+    fun listAllTags(): MutableList<XmlTag> {
+        val tagList = mutableListOf<XmlTag>()
+        accept {
+            if(it is XmlTag) tagList.add(it)
+            else true
+        }
+        return tagList
+    }
+
 }
 
 /**

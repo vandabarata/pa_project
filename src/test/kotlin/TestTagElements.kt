@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
- * Tests to assess the correct behaviour of each Tag Element
+ * Tests to assess the correct behaviour of each Xml Element
  */
 class TestTagElements {
     private val xmlSampleFile = File("src/test/resources/XmlSampleFromMainProblem")
@@ -39,45 +39,76 @@ class TestTagElements {
 
     // ------------------- Tests for Nesting Tags ------------------- \\
 
+    private val rootTag = XmlTag("rootTag")
+    private val childTag = XmlTag("childTag", rootTag)
+    private val anotherChildTag = XmlTag("anotherChildTag", rootTag)
+    private val anotherChildTagChild = XmlTag("anotherChildTagChild", anotherChildTag)
+    private val deepesteChildTag = XmlTagContent("deepestChildTagContent", anotherChildTagChild)
+    private val deepestTag = XmlTag("deepestTag", childTag)
+    private val someXmlContent = XmlTagContent("aTagContent", childTag)
+    private val xmlDoc = Document(XmlHeader(), rootTag)
+
+    /**
+     * Confirms the correct creation and nesting of XmlTag elements.
+     */
     @Test
-    fun tagsShouldCreatedAndNestedCorrectly() {
+    fun tagsShouldBeCreatedAndNestedCorrectly() {
         // assert that an individual tag is created with the correct name
-        val parentTag = XmlTag("parentTag")
-        assertEquals("parentTag", parentTag.name)
+        assertEquals("parentTag", rootTag.name)
 
         // assert that another tag can be created and be the first tag's child tag
-        val childTag = XmlTag("childTag", parentTag)
         assertEquals("childTag", childTag.name)
-        assertEquals(parentTag.name, childTag.parent?.name)
+        assertEquals(rootTag.name, childTag.parent?.name)
 
         // assert that the parent tag now has the right child tag associated
-        assertEquals(childTag.name, parentTag.children[0].name)
+        assertEquals(childTag.name, rootTag.children[0].name)
 
         // confirm that the children list grows correctly when adding another child tag
-        val anotherChildTag = XmlTag("anotherChildTag", parentTag)
-        assertEquals(anotherChildTag.name, parentTag.children[1].name)
+        assertEquals(anotherChildTag.name, rootTag.children[1].name)
         // also confirm that the new tag's parent isn't its sibling tag
         assertNotEquals(childTag.name, anotherChildTag.parent?.name)
 
         // assert correct nesting of tags
-        val childChildTag = XmlTag("deepestTag", childTag)
-        assertEquals("parentTag", childChildTag.parent?.parent?.name)
+        assertEquals("parentTag", deepestTag.parent?.parent?.name)
     }
 
+    /**
+     * Confirms that XmlTag elements are being correctly added to a Document,
+     * and remain properly nested.
+     */
     @Test
     fun tagsShouldBeCorrectlyAddedToDoc() {
-        val rootTag = XmlTag("rootTag")
-        val childTag = XmlTag("child", rootTag)
-        val deepestTag = XmlTag("deepTag", childTag)
-
-        val xmlDoc = Document(XmlHeader(), rootTag)
         assertEquals(rootTag.name, xmlDoc.docRoot.name)
         assertEquals(childTag.name, xmlDoc.docRoot.children[0].name)
-        println(xmlDoc.docRoot.children[0]::class)
-        // assertEquals(deepestTag.name, (xmlDoc.docRoot.children[0]).children[0].name)
+    }
 
+    /**
+     * Confirms that the method to list all tags displays them correctly,
+     * and doesn't show any tag content.
+     */
+    @Test
+    fun testShowAllTagsInDoc() {
+        // confirm the XmlTagContent isn't included in the tags list
+        assertFalse(xmlDoc.docRoot.listAllTags().toString().contains(someXmlContent.name))
 
+        // confirm that the lists contains all expected elements
+        assertIterableEquals(arrayListOf(rootTag, childTag, deepestTag), xmlDoc.docRoot.listAllTags())
+    }
 
+    // ------------------- Tests for Adding and Removing XmlElements in Document ------------------- \\
+
+    /**
+     * Confirms that user is able to remove an element from a document,
+     * and all children element associated with it.
+     */
+    @Test
+    fun shouldBeAbleToRemoveElement() {
+        val elementToRemove = anotherChildTag
+        assertTrue(xmlDoc.listAllElements.contains(anotherChildTag))
+        xmlDoc.removeElementFromDoc(anotherChildTag.name)
+        assertFalse(xmlDoc.listAllElements.contains(anotherChildTag))
+        // assertFalse(xmlDoc.listAllElements.toString().contains(anotherChildTag.name))
+        println(xmlDoc.listAllElements)
     }
 
 }
