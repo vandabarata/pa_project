@@ -39,7 +39,7 @@ class Document(
 
     /**
      * Overrides the toString method to show the Header/ XML Prolog,
-     * and the XNL elements that compose it.
+     * and the XML elements that compose it.
      *
      * @return a String showing the XML Prolog and all the XML elements,
      * clearly separated.
