@@ -105,6 +105,7 @@ class TestDocElements {
         val elementToRemove = deepesteChildTagContent
         assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
         xmlDoc.removeElementFromDoc(elementToRemove.name)
+        println(xmlDoc.listAllElements)
         assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
     }
 
@@ -117,8 +118,7 @@ class TestDocElements {
         assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
         xmlDoc.removeElementFromDoc(elementToRemove.name)
         assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
-        // TODO: Uncomment when https://github.com/vandabarata/pa_project/issues/13 is fixed
-        // assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
+        assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
     }
 
 }
