@@ -32,7 +32,7 @@ sealed interface XmlElement {
  * @property parent An XmlTag may or may not have a parent (another XmlTag).
  *  This property is null by default, if one isn't specified (if the XmlTag is the root element, for example).
  * @property tagAttributes XmlTags can have attributes. This is a map of keys with associated values, all as Strings.
- * Considered null by default, as this isn't mandatory.
+ * Considered empty by default, as this isn't mandatory.
  * @constructor An XmlTag must be given a name, and can be given another XmlTag as a parent.
  * It may also include attributes, which are values mapped to certain keys that might show up as
  * <XmlTag key1 = "value1" key2 = "value2"/> on an XML Document.
@@ -40,7 +40,7 @@ sealed interface XmlElement {
 data class XmlTag(
     override val name: String,
     override val parent: XmlTag? = null,
-    val tagAttributes: MutableMap<String, String>? = null
+    val tagAttributes: MutableMap<String, String> = mutableMapOf()
 ) : XmlElement {
     val children: MutableList<XmlElement> = mutableListOf()
 
@@ -61,6 +61,31 @@ data class XmlTag(
                 it.accept(visitor)
             }
     }
+
+    /**
+     * User provides an attribute key and an attribute value, which is then added to the attribute map,
+     * in case it doesn't exist, or edited, in case the key already exists.
+     *
+     * @param attributeKey This key is a String that represents the attribute's name to add or edit.
+     * @param attributeValue The value that's going to be added or updated onto an existing attribute.
+     */
+    fun addOrEditAttribute(attributeKey: String, attributeValue: String) {
+        this.tagAttributes[attributeKey] = attributeValue
+    }
+
+    /**
+     * Remove attribute from this XmlTag's attributes, if it already exists.
+     * @throws IllegalArgumentException if the given attribute key isn't a part of this tag's attributes.
+     *
+     * @param attributeKey The name of the attribute to be removed
+     */
+    fun removeAttribute(attributeKey: String) {
+        if (tagAttributes.containsKey(attributeKey)) this.tagAttributes.remove(attributeKey)
+        else throw IllegalArgumentException("Such attribute isn't a part of this XML Tag.")
+    }
+
+    val listAttributes: MutableMap<String, String>
+            get() = tagAttributes
 
     /**
      * Simple method that iterates through all the XmlTags of a Document.
