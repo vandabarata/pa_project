@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Tests to assess the correct behaviour of each Xml Element
  */
-class TestTagElements {
+class TestDocElements {
     private val xmlSampleFile = File("src/test/resources/XmlSampleFromMainProblem")
 
     // ------------------- Tests for XML Header ------------------- \\
@@ -43,7 +43,7 @@ class TestTagElements {
     private val childTag = XmlTag("childTag", rootTag)
     private val anotherChildTag = XmlTag("anotherChildTag", rootTag)
     private val anotherChildTagChild = XmlTag("anotherChildTagChild", anotherChildTag)
-    private val deepesteChildTag = XmlTagContent("deepestChildTagContent", anotherChildTagChild)
+    private val deepesteChildTagContent = XmlTagContent("deepestChildTagContent", anotherChildTagChild)
     private val deepestTag = XmlTag("deepestTag", childTag)
     private val someXmlContent = XmlTagContent("aTagContent", childTag)
     private val xmlDoc = Document(XmlHeader(), rootTag)
@@ -54,7 +54,7 @@ class TestTagElements {
     @Test
     fun tagsShouldBeCreatedAndNestedCorrectly() {
         // assert that an individual tag is created with the correct name
-        assertEquals("parentTag", rootTag.name)
+        assertEquals("rootTag", rootTag.name)
 
         // assert that another tag can be created and be the first tag's child tag
         assertEquals("childTag", childTag.name)
@@ -69,7 +69,7 @@ class TestTagElements {
         assertNotEquals(childTag.name, anotherChildTag.parent?.name)
 
         // assert correct nesting of tags
-        assertEquals("parentTag", deepestTag.parent?.parent?.name)
+        assertEquals("rootTag", deepestTag.parent?.parent?.name)
     }
 
     /**
@@ -92,23 +92,33 @@ class TestTagElements {
         assertFalse(xmlDoc.docRoot.listAllTags().toString().contains(someXmlContent.name))
 
         // confirm that the lists contains all expected elements
-        assertIterableEquals(arrayListOf(rootTag, childTag, deepestTag), xmlDoc.docRoot.listAllTags())
+        assertIterableEquals(arrayListOf(rootTag, childTag, deepestTag, anotherChildTag, anotherChildTagChild), xmlDoc.docRoot.listAllTags())
     }
 
     // ------------------- Tests for Adding and Removing XmlElements in Document ------------------- \\
 
     /**
-     * Confirms that user is able to remove an element from a document,
-     * and all children elements associated with it.
+     * Assesses that user is able to remove the XmlTagContent from a Document.
+     */
+    @Test
+    fun shouldBeAbleToRemoveXmlTagContent() {
+        val elementToRemove = deepesteChildTagContent
+        assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
+        xmlDoc.removeElementFromDoc(elementToRemove.name)
+        assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
+    }
+
+    /**
+     * Confirms that user is able to remove an XmlTag from a Document, and all children elements associated with it.
      */
     @Test
     fun shouldBeAbleToRemoveElementAndChildren() {
         val elementToRemove = anotherChildTag
-        assertTrue(xmlDoc.listAllElements.contains(anotherChildTag))
-        xmlDoc.removeElementFromDoc(anotherChildTag.name)
-        assertFalse(xmlDoc.listAllElements.contains(anotherChildTag))
-        // TODO: Uncomment when https://github.com/vandabarata/pa_project/issues/13 is solved
-        // assertFalse(xmlDoc.listAllElements.toString().contains(anotherChildTag.name))
+        assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
+        xmlDoc.removeElementFromDoc(elementToRemove.name)
+        assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
+        // TODO: Uncomment when https://github.com/vandabarata/pa_project/issues/13 is fixed
+        // assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
     }
 
 }
