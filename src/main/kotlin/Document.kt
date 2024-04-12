@@ -21,7 +21,6 @@ class Document(
 
     /**
      * Makes sure to clear the list of elements and update it, by iterating through the children of the root tag again.
-     *
      */
     private fun updateElementList() {
         allElements.clear()
@@ -33,6 +32,19 @@ class Document(
 
     val listAllElements: List<XmlElement>
         get() = allElements
+
+    /**
+     * Adds an XmlElement to the Document's list of elements if its parentage is a part of the Document.
+     *
+     * @param element XmlElement to be added to the Document. Can't be a root element.
+     * Must be a child of the Document's root element, or its children.
+     */
+    fun addElementToDoc(element: XmlElement) {
+        if (allElements.contains(element.parent?: "")) allElements.add(element)
+        else throw IllegalArgumentException (
+            "Can't add ${element.name} to Document, since it doesn't belong to ${docRoot.name}'s children or their children")
+    }
+
 
     /**
      * Removes the XmlElement from its parent's children list, as well as from the Document's list of elements.
@@ -61,8 +73,7 @@ class Document(
      * Overrides the toString method to show the Header/ XML Prolog,
      * and the XML elements that compose it.
      *
-     * @return a String showing the XML Prolog and all the XML elements,
-     * clearly separated.
+     * @return a String showing the XML Prolog and all the XML elements, clearly separated.
      */
     override fun toString(): String = """
         Header: $docHeader

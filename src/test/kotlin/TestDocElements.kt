@@ -46,6 +46,11 @@ class TestDocElements {
     private val deepesteChildTagContent = XmlTagContent("deepestChildTagContent", anotherChildTagChild)
     private val deepestTag = XmlTag("deepestTag", childTag)
     private val someXmlContent = XmlTagContent("aTagContent", childTag)
+    private val rootTagToBeAdded = XmlTag("rootTagToBeAdded")
+    private val randomTag = XmlTag("random")
+    private val randomTagChild = XmlTag("randomChild", randomTag)
+    private val normalTagToBeAdded = XmlTag("normalTagToBeAdded", anotherChildTagChild)
+    private val contentToBeAdded = XmlTagContent("content", normalTagToBeAdded)
     private val xmlDoc = Document(XmlHeader(), rootTag)
 
     /**
@@ -119,6 +124,34 @@ class TestDocElements {
         xmlDoc.removeElementFromDoc(elementToRemove.name)
         assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
         assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
+    }
+
+    /**
+     * Confirms that user isn't able to remove non-existing element.
+     * This doesn't throw an exception, but makes sure the Document's element list remains the same.
+     */
+    @Test
+    fun shouldntBeAbleToRemoveNonExistingElement() {
+        assertFalse(xmlDoc.listAllElements.contains(randomTag))
+        val elementListBefore = xmlDoc.listAllElements
+        xmlDoc.removeElementFromDoc(randomTag.name)
+        val elementListAfter = xmlDoc.listAllElements
+        assertIterableEquals(elementListBefore, elementListAfter)
+    }
+
+    /**
+     * Confirms that the user can add any type of XmlElement to a Document,
+     * as long as its part of the Document Root's children.
+     * Also tests that it's impossible for the user to add an element that's not a part of the Document Root children.
+     */
+    @Test
+    fun shouldBeAbleToAddElementToDoc() {
+        assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(rootTagToBeAdded) }
+        assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(randomTagChild) }
+        xmlDoc.addElementToDoc(normalTagToBeAdded)
+        xmlDoc.addElementToDoc(contentToBeAdded)
+        assertTrue(xmlDoc.listAllElements.contains(normalTagToBeAdded))
+        assertTrue(xmlDoc.listAllElements.contains(contentToBeAdded))
     }
 
 }
