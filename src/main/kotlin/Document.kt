@@ -36,7 +36,6 @@ class Document(
             true
         }
     }
-        // allElements.removeAll { it.name == elementName || it.parent?.name == elementName }
 
     /**
      * TODO

@@ -99,16 +99,16 @@ class TestTagElements {
 
     /**
      * Confirms that user is able to remove an element from a document,
-     * and all children element associated with it.
+     * and all children elements associated with it.
      */
     @Test
-    fun shouldBeAbleToRemoveElement() {
+    fun shouldBeAbleToRemoveElementAndChildren() {
         val elementToRemove = anotherChildTag
         assertTrue(xmlDoc.listAllElements.contains(anotherChildTag))
         xmlDoc.removeElementFromDoc(anotherChildTag.name)
         assertFalse(xmlDoc.listAllElements.contains(anotherChildTag))
+        // TODO: Uncomment when https://github.com/vandabarata/pa_project/issues/13 is solved
         // assertFalse(xmlDoc.listAllElements.toString().contains(anotherChildTag.name))
-        println(xmlDoc.listAllElements)
     }
 
 }
