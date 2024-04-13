@@ -45,6 +45,21 @@ class Document(
             "Can't add ${element.name} to Document, since it doesn't belong to ${docRoot.name}'s children or their children")
     }
 
+    /**
+     * Given the name of a tag, an attribute name and an attribute value, adds this attribute to the XmlTag,
+     * if it's a part of the Document.
+     *
+     * @param tagName The name of the tag to add the attribute to.
+     * @param attrName The name/ key of the attribute.
+     * @param attrValue The value of the attribute.
+     */
+    fun addAttributeToTag(tagName: String, attrName: String, attrValue: String) {
+        allElements.forEach {
+            if(it.name == tagName && it is XmlTag) it.addOrEditAttribute(attrName, attrValue)
+        }
+        updateElementList()
+    }
+
 
     /**
      * Removes the XmlElement from its parent's children list, as well as from the Document's list of elements.
@@ -52,7 +67,7 @@ class Document(
      *
      * @param elementName The name of the element to be removed.
      */
-    fun removeElementFromDoc(elementName: String) {
+    fun removeElementsFromDoc(elementName: String) {
         val elementsToRemove = mutableListOf<XmlElement>()
         docRoot.accept {
             if (it.name == elementName) {

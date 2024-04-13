@@ -37,7 +37,7 @@ class TestDocElements {
         assertThrows(IllegalArgumentException::class.java) { XmlHeader(encoding = "something") }
     }
 
-    // ------------------- Tests for Nesting Tags ------------------- \\
+    // ------------------- Tests for Nesting Tags/ Elements ------------------- \\
 
     // XmlTags/ Composite Elements
     private val rootTag = XmlTag("rootTag")
@@ -115,7 +115,7 @@ class TestDocElements {
     fun shouldBeAbleToRemoveXmlTagContent() {
         val elementToRemove = deepesteChildTagContent
         assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
-        xmlDoc.removeElementFromDoc(elementToRemove.name)
+        xmlDoc.removeElementsFromDoc(elementToRemove.name)
         println(xmlDoc.listAllElements)
         assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
     }
@@ -127,9 +127,27 @@ class TestDocElements {
     fun shouldBeAbleToRemoveElementAndChildren() {
         val elementToRemove = anotherChildTag
         assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
-        xmlDoc.removeElementFromDoc(elementToRemove.name)
+        xmlDoc.removeElementsFromDoc(elementToRemove.name)
         assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
         assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
+    }
+
+    /**
+     * Confirms that a user can remove several elements, if they share the same name.
+     */
+    @Test
+    fun shouldBeAbleToRemoveSeveralElementsWithTheSameName() {
+        val oneTag = XmlTag("aTagName", rootTag)
+        val someOtherTag = XmlTag("aTagName", anotherChildTag)
+        xmlDoc.addElementToDoc(oneTag)
+        xmlDoc.addElementToDoc(someOtherTag)
+
+        assertTrue(xmlDoc.listAllElements.contains(oneTag))
+        assertTrue(xmlDoc.listAllElements.contains(someOtherTag))
+        xmlDoc.removeElementsFromDoc(oneTag.name)
+        assertFalse(xmlDoc.listAllElements.contains(oneTag))
+        assertFalse(xmlDoc.listAllElements.contains(someOtherTag))
+        assertFalse(xmlDoc.listAllElements.toString().contains(someOtherTag.name))
     }
 
     /**
@@ -140,7 +158,7 @@ class TestDocElements {
     fun shouldntBeAbleToRemoveNonExistingElement() {
         assertFalse(xmlDoc.listAllElements.contains(randomTag))
         val elementListBefore = xmlDoc.listAllElements
-        xmlDoc.removeElementFromDoc(randomTag.name)
+        xmlDoc.removeElementsFromDoc(randomTag.name)
         val elementListAfter = xmlDoc.listAllElements
         assertIterableEquals(elementListBefore, elementListAfter)
     }
@@ -225,6 +243,34 @@ class TestDocElements {
         val newTagWithAttributes = XmlTag("newTag", randomTag, mutableMapOf(Pair("attr", "value")))
 
         assertThrows(IllegalArgumentException::class.java) { newTagWithAttributes.removeAttribute("")}
+    }
+
+    /**
+     * Confirms that user can add attributes to a Document's XmlTag, based on the XmlTag's name.
+     */
+    @Test
+    fun shouldBeAbleToAddAttributesToDocument() {
+        xmlDoc.addAttributeToTag(deepestTag.name, "testAttributeName", "testAttributeValue")
+        assertTrue(xmlDoc.listAllElements.toString().contains("testAttributeName"))
+        xmlDoc.listAllElements.forEach {
+            if(it.name == deepestTag.name)
+                assertTrue(deepestTag.tagAttributes.containsKey("testAttributeName")
+                            && deepestTag.tagAttributes.containsValue("testAttributeValue"))
+        }
+    }
+
+    /**
+     * Assesses that user can't add attributes to non-existing tags in document.
+     */
+    @Test
+    fun shouldntBeAbleToAddAttributesToNonExistingTagsInDocument() {
+        xmlDoc.addAttributeToTag(randomTag.name, "testRandomAttributeName", "testRandomAttributeValue")
+        xmlDoc.listAllElements.forEach {
+            assertFalse(it.name == randomTag.name)
+            if(it.name == randomTag.name)
+                assertFalse(randomTag.tagAttributes.containsKey("testAttributeName")
+                        && randomTag.tagAttributes.containsValue("testAttributeValue"))
+        }
     }
 
 }
