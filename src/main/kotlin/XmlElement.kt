@@ -7,7 +7,7 @@
  * (Composite object that it descends from).
  */
 sealed interface XmlElement {
-    val name: String
+    var name: String
     val parent: XmlTag?
 
     /**
@@ -38,7 +38,7 @@ sealed interface XmlElement {
  * <XmlTag key1 = "value1" key2 = "value2"/> on an XML Document.
  */
 data class XmlTag(
-    override val name: String,
+    override var name: String,
     override val parent: XmlTag? = null,
     val tagAttributes: MutableMap<String, String> = mutableMapOf()
 ) : XmlElement {
@@ -113,7 +113,7 @@ data class XmlTag(
  * @constructor Adds this tag content to an existing tag or nested tags (parent element(s)).
  */
 data class XmlTagContent(
-    override val name: String,
+    override var name: String,
     override val parent: XmlTag?
 ) : XmlElement {
 
