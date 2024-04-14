@@ -40,7 +40,7 @@ sealed interface XmlElement {
 data class XmlTag(
     override var name: String,
     override val parent: XmlTag? = null,
-    val tagAttributes: MutableMap<String, String> = mutableMapOf()
+    private var tagAttributes: MutableMap<String, String> = mutableMapOf()
 ) : XmlElement {
     val children: MutableList<XmlElement> = mutableListOf()
 
@@ -74,6 +74,16 @@ data class XmlTag(
     }
 
     /**
+     * Replaces the old attributes map with a new one. This is especially useful when the user needs to rename
+     * attribute names, since these serve as map keys and can't be renamed otherwise.
+     *
+     * @param newAttributes The new attributes of this XmlTag, mapped by name and value.
+     */
+    fun changeAttributesMap(newAttributes: MutableMap<String, String>) {
+        this.tagAttributes = newAttributes
+    }
+
+    /**
      * Remove attribute from this XmlTag's attributes, if it already exists.
      * @throws IllegalArgumentException if the given attribute key isn't a part of this tag's attributes.
      *
@@ -84,7 +94,7 @@ data class XmlTag(
         else throw IllegalArgumentException("Such attribute isn't a part of this XML Tag.")
     }
 
-    val listAttributes: MutableMap<String, String>
+    val getTagAttributes: MutableMap<String, String>
             get() = tagAttributes
 
     /**
