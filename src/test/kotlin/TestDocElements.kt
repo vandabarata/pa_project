@@ -41,23 +41,20 @@ class TestDocElements {
 
     // XmlTags/ Composite Elements
     private val rootTag = XmlTag("rootTag")
-    private val childTag = XmlTag("childTag", rootTag)
-    private val anotherChildTag = XmlTag("anotherChildTag", rootTag)
-    private val anotherChildTagChild = XmlTag("anotherChildTagChild", anotherChildTag)
-    private val deepestTag = XmlTag("deepestTag", childTag)
-    private val rootTagToBeAdded = XmlTag("rootTagToBeAdded")
+    private val rootChildTag = XmlTag("childTag", rootTag)
+    private val anotherRootChildTag = XmlTag("anotherChildTag", rootTag)
+    private val childOfAnotherRootChildTag = XmlTag("anotherChildTagChild", anotherRootChildTag)
+    private val childOfRootChildTag = XmlTag("deepestTag", rootChildTag)
+    private val childlessTag = XmlTag("childlessTag", anotherRootChildTag)
+    private val someTagWithAttributes = XmlTag("someTagWithAttributes", rootTag,
+        mutableMapOf(Pair("An Attribute", "With a Value"), Pair("Yet Another Attribute", "With Another Value")))
     private val randomTag = XmlTag("random")
-    private val randomTagChild = XmlTag("randomChild", randomTag)
-    private val normalTagToBeAdded = XmlTag("normalTagToBeAdded", anotherChildTagChild)
 
-    // XmlTagContents/ Leaf Elements
-    private val someXmlContent = XmlTagContent("aTagContent", childTag)
-    private val contentToBeAdded = XmlTagContent("content", normalTagToBeAdded)
-    private val deepesteChildTagContent = XmlTagContent("deepestChildTagContent", anotherChildTagChild)
+    // XmlTagContent / Leaf Elements
+    private val aTagContent = XmlTagContent("aTagContent", childOfRootChildTag)
 
     // Document
     private val xmlDoc = Document(XmlHeader(), rootTag)
-
 
     /**
      * Confirms the correct creation and nesting of XmlTag elements.
@@ -68,19 +65,19 @@ class TestDocElements {
         assertEquals("rootTag", rootTag.name)
 
         // assert that another tag can be created and be the first tag's child tag
-        assertEquals("childTag", childTag.name)
-        assertEquals(rootTag.name, childTag.parent?.name)
+        assertEquals("childTag", rootChildTag.name)
+        assertEquals(rootTag.name, rootChildTag.parent?.name)
 
         // assert that the parent tag now has the right child tag associated
-        assertEquals(childTag.name, rootTag.children[0].name)
+        assertEquals(rootChildTag.name, rootTag.children[0].name)
 
         // confirm that the children list grows correctly when adding another child tag
-        assertEquals(anotherChildTag.name, rootTag.children[1].name)
+        assertEquals(anotherRootChildTag.name, rootTag.children[1].name)
         // also confirm that the new tag's parent isn't its sibling tag
-        assertNotEquals(childTag.name, anotherChildTag.parent?.name)
+        assertNotEquals(rootChildTag.name, anotherRootChildTag.parent?.name)
 
         // assert correct nesting of tags
-        assertEquals("rootTag", deepestTag.parent?.parent?.name)
+        assertEquals("rootTag", childOfRootChildTag.parent?.parent?.name)
     }
 
     /**
@@ -90,21 +87,21 @@ class TestDocElements {
     @Test
     fun tagsShouldBeCorrectlyAddedToDoc() {
         assertEquals(rootTag.name, xmlDoc.docRoot.name)
-        assertEquals(childTag.name, xmlDoc.docRoot.children[0].name)
+        assertEquals(rootChildTag.name, xmlDoc.docRoot.children[0].name)
     }
 
     /**
-     * Confirms that the method to list all tags displays them correctly,
-     * and doesn't show any tag content.
+     * Confirms user is able to add an XmlTagContent to an XmtTag (without children), and a Document,
+     * and also that user can't add an XmlTagContent to an XmlTag that already has children.
+     *
      */
     @Test
-    fun testShowAllTagsInDoc() {
-        // confirm the XmlTagContent isn't included in the tags list
-        assertFalse(xmlDoc.docRoot.listAllTags().toString().contains(someXmlContent.name))
-
-        // confirm that the lists contains all expected elements
-        assertIterableEquals(arrayListOf(rootTag, childTag, deepestTag, anotherChildTag, anotherChildTagChild, normalTagToBeAdded), xmlDoc.docRoot.listAllTags())
+    fun shouldBeAbleToAddXmlTagContent() {
+        assertTrue(xmlDoc.listAllElements.contains(aTagContent))
+        assertThrows(IllegalArgumentException::class.java) { XmlTagContent("something", rootTag) }
     }
+
+
 
     // ------------------- Tests for Adding and Removing XmlElements in Document ------------------- \\
 
@@ -113,11 +110,12 @@ class TestDocElements {
      */
     @Test
     fun shouldBeAbleToRemoveXmlTagContent() {
-        val elementToRemove = deepesteChildTagContent
-        assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
-        xmlDoc.removeElementsFromDoc(elementToRemove.name)
-        println(xmlDoc.listAllElements)
-        assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
+        val deepesteChildTagContent = XmlTagContent("deepestChildTagContent", childOfAnotherRootChildTag)
+        xmlDoc.addElementToDoc(deepesteChildTagContent)
+
+        assertTrue(xmlDoc.listAllElements.contains(deepesteChildTagContent))
+        xmlDoc.removeElementsFromDoc(deepesteChildTagContent.name)
+        assertFalse(xmlDoc.listAllElements.contains(deepesteChildTagContent))
     }
 
     /**
@@ -125,11 +123,10 @@ class TestDocElements {
      */
     @Test
     fun shouldBeAbleToRemoveElementAndChildren() {
-        val elementToRemove = anotherChildTag
-        assertTrue(xmlDoc.listAllElements.contains(elementToRemove))
-        xmlDoc.removeElementsFromDoc(elementToRemove.name)
-        assertFalse(xmlDoc.listAllElements.contains(elementToRemove))
-        assertFalse(xmlDoc.listAllElements.toString().contains(elementToRemove.name))
+        assertTrue(xmlDoc.listAllElements.contains(anotherRootChildTag))
+        xmlDoc.removeElementsFromDoc(anotherRootChildTag.name)
+        assertFalse(xmlDoc.listAllElements.contains(anotherRootChildTag))
+        assertFalse(xmlDoc.listAllElements.toString().contains(anotherRootChildTag.name))
     }
 
     /**
@@ -138,7 +135,7 @@ class TestDocElements {
     @Test
     fun shouldBeAbleToRemoveSeveralElementsWithTheSameName() {
         val oneTag = XmlTag("aTagName", rootTag)
-        val someOtherTag = XmlTag("aTagName", anotherChildTag)
+        val someOtherTag = XmlTag("aTagName", anotherRootChildTag)
         xmlDoc.addElementToDoc(oneTag)
         xmlDoc.addElementToDoc(someOtherTag)
 
@@ -165,11 +162,16 @@ class TestDocElements {
 
     /**
      * Confirms that the user can add any type of XmlElement to a Document,
-     * as long as its part of the Document Root's children.
+     * as long as it's part of the Document Root's children.
      * Also tests that it's impossible for the user to add an element that's not a part of the Document Root children.
      */
     @Test
     fun shouldBeAbleToAddElementToDoc() {
+        val rootTagToBeAdded = XmlTag("rootTagToBeAdded")
+        val randomTagChild = XmlTag("randomChild", randomTag)
+        val normalTagToBeAdded = XmlTag("normalTagToBeAdded", childOfAnotherRootChildTag)
+        val contentToBeAdded = XmlTagContent("content", normalTagToBeAdded)
+
         assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(rootTagToBeAdded) }
         assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(randomTagChild) }
         xmlDoc.addElementToDoc(normalTagToBeAdded)
@@ -250,12 +252,13 @@ class TestDocElements {
      */
     @Test
     fun shouldBeAbleToAddAttributesToDocument() {
-        xmlDoc.addAttributeToTag(deepestTag.name, "testAttributeName", "testAttributeValue")
+        val tag = childlessTag
+        xmlDoc.addAttributeToTag(tag.name, "testAttributeName", "testAttributeValue")
         assertTrue(xmlDoc.listAllElements.toString().contains("testAttributeName"))
         xmlDoc.listAllElements.forEach {
-            if(it.name == deepestTag.name)
-                assertTrue(deepestTag.getTagAttributes.containsKey("testAttributeName")
-                            && deepestTag.getTagAttributes.containsValue("testAttributeValue"))
+            if(it.name == tag.name)
+                assertTrue(tag.getTagAttributes.containsKey("testAttributeName")
+                            && tag.getTagAttributes.containsValue("testAttributeValue"))
         }
     }
 
@@ -348,5 +351,10 @@ class TestDocElements {
         }
     }
 
+    @Test
+    fun letsTestStrings() {
+        println(xmlDoc.listAllElements)
+        // println(xmlDoc.pretty())
+    }
 
 }

@@ -153,4 +153,14 @@ class Document(
         XML Elements: $allElements
     """.trimIndent()
 
+    fun pretty(): String {
+        updateElementList()
+        var toPrint = ""
+        docRoot.accept {
+            toPrint += it.toString()
+            true
+        }
+        return toPrint
+    }
+
 }

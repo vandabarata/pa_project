@@ -20,8 +20,6 @@ sealed interface XmlElement {
     fun accept(visitor: (XmlElement) -> Boolean) {
         visitor(this)
     }
-
-
 }
 
 /**
@@ -97,18 +95,36 @@ data class XmlTag(
     val getTagAttributes: MutableMap<String, String>
             get() = tagAttributes
 
-    /**
-     * Simple method that iterates through all the XmlTags of a Document.
-     *
-     * @return a list containing all XmlTag elements.
-     */
-    fun listAllTags(): MutableList<XmlTag> {
-        val tagList = mutableListOf<XmlTag>()
-        accept {
-            if(it is XmlTag) tagList.add(it)
-            else true
+    override fun toString(): String {
+/*        return if(children.isEmpty()) "something"
+        else "<$name></$name>\n"*/
+        var toPrint = ""
+        var openTag = "<$name"
+        var closeTag = ""
+
+        if (tagAttributes.isEmpty())  {
+            openTag += ">"
+            closeTag = "</$name>"
         }
-        return tagList
+        else {
+            tagAttributes.forEach {
+                openTag += " ${it.key}=\"${it.value}\""
+            }
+            closeTag = if (children.isEmpty()) "/>"
+            else "</$name>"
+        }
+
+        val tagContent = children.filterIsInstance<XmlTagContent>()
+
+        if (children.isNotEmpty()) {
+            children.forEach {
+                if (it is XmlTagContent) toPrint += it
+            }
+        }
+
+        closeTag += "\n"
+
+        return openTag + toPrint + closeTag
     }
 
 }
@@ -124,11 +140,15 @@ data class XmlTag(
  */
 data class XmlTagContent(
     override var name: String,
-    override val parent: XmlTag?
+    override val parent: XmlTag
 ) : XmlElement {
 
     init {
-        parent?.children?.add(this)
+        if (parent.children.isEmpty()) parent.children.add(this)
+        else throw IllegalArgumentException("Can't add tag content to a tag that has other nested elements.")
     }
 
+    override fun toString(): String {
+        return "<${parent.name}>$name</${parent.name}>"
+    }
 }
