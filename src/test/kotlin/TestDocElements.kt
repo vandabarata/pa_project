@@ -186,7 +186,7 @@ class TestDocElements {
      */
     @Test
     fun shouldBeAbleToAccessATagsNonExistingAttributes() {
-        assertTrue(xmlDoc.docRoot.tagAttributes.isEmpty())
+        assertTrue(xmlDoc.docRoot.getTagAttributes.isEmpty())
     }
 
     /**
@@ -196,12 +196,12 @@ class TestDocElements {
     fun shouldBeAbleToAddAttributesToTag() {
         val newTagWithAttributes = XmlTag("newTag", randomTag, mutableMapOf(Pair("attr", "value")))
 
-        assertTrue(newTagWithAttributes.listAttributes.containsKey("attr"))
-        assertTrue(newTagWithAttributes.listAttributes.containsValue("value"))
-        assertFalse(newTagWithAttributes.listAttributes.containsKey("newAttr"))
+        assertTrue(newTagWithAttributes.getTagAttributes.containsKey("attr"))
+        assertTrue(newTagWithAttributes.getTagAttributes.containsValue("value"))
+        assertFalse(newTagWithAttributes.getTagAttributes.containsKey("newAttr"))
         newTagWithAttributes.addOrEditAttribute("newAttr", "newValue")
-        assertTrue(newTagWithAttributes.listAttributes.containsKey("newAttr"))
-        assertTrue(newTagWithAttributes.listAttributes.containsValue("newValue"))
+        assertTrue(newTagWithAttributes.getTagAttributes.containsKey("newAttr"))
+        assertTrue(newTagWithAttributes.getTagAttributes.containsValue("newValue"))
     }
 
     /**
@@ -211,15 +211,15 @@ class TestDocElements {
     fun shouldBeAbleToEditAttributesOfExistingTag() {
         val newTagWithAttributes = XmlTag("newTag", randomTag, mutableMapOf(Pair("attr", "value")))
 
-        assertTrue(newTagWithAttributes.listAttributes.containsKey("attr") &&
-                    newTagWithAttributes.listAttributes["attr"] == "value")
+        assertTrue(newTagWithAttributes.getTagAttributes.containsKey("attr") &&
+                    newTagWithAttributes.getTagAttributes["attr"] == "value")
         newTagWithAttributes.addOrEditAttribute("attr", "editedValue")
-        assertTrue(newTagWithAttributes.listAttributes["attr"] == "editedValue")
+        assertTrue(newTagWithAttributes.getTagAttributes["attr"] == "editedValue")
 
         newTagWithAttributes.addOrEditAttribute("something", "editedValue")
         // confirm that, despite same value, a new key is added
-        assertTrue(newTagWithAttributes.listAttributes.containsKey("something") &&
-                newTagWithAttributes.listAttributes.containsKey("attr"))
+        assertTrue(newTagWithAttributes.getTagAttributes.containsKey("something") &&
+                newTagWithAttributes.getTagAttributes.containsKey("attr"))
     }
 
     /**
@@ -229,10 +229,10 @@ class TestDocElements {
     fun shouldBeAbleToRemoveAttributes() {
         val newTagWithAttributes = XmlTag("newTag", randomTag, mutableMapOf(Pair("attr", "value")))
 
-        assertTrue(newTagWithAttributes.listAttributes["attr"] == "value")
+        assertTrue(newTagWithAttributes.getTagAttributes["attr"] == "value")
         newTagWithAttributes.removeAttribute("attr")
-        assertFalse(newTagWithAttributes.listAttributes["attr"] == "value")
-        assertTrue(newTagWithAttributes.listAttributes.isEmpty())
+        assertFalse(newTagWithAttributes.getTagAttributes["attr"] == "value")
+        assertTrue(newTagWithAttributes.getTagAttributes.isEmpty())
     }
 
     /**
@@ -254,8 +254,8 @@ class TestDocElements {
         assertTrue(xmlDoc.listAllElements.toString().contains("testAttributeName"))
         xmlDoc.listAllElements.forEach {
             if(it.name == deepestTag.name)
-                assertTrue(deepestTag.tagAttributes.containsKey("testAttributeName")
-                            && deepestTag.tagAttributes.containsValue("testAttributeValue"))
+                assertTrue(deepestTag.getTagAttributes.containsKey("testAttributeName")
+                            && deepestTag.getTagAttributes.containsValue("testAttributeValue"))
         }
     }
 
@@ -268,12 +268,12 @@ class TestDocElements {
         xmlDoc.listAllElements.forEach {
             assertFalse(it.name == randomTag.name)
             if(it.name == randomTag.name)
-                assertFalse(randomTag.tagAttributes.containsKey("testAttributeName")
-                        && randomTag.tagAttributes.containsValue("testAttributeValue"))
+                assertFalse(randomTag.getTagAttributes.containsKey("testAttributeName")
+                        && randomTag.getTagAttributes.containsValue("testAttributeValue"))
         }
     }
 
-    // ------------------- Tests for Renaming XmlTags ------------------- \\
+    // ------------------- Tests for Renaming Document Elements ------------------- \\
 
     /**
      * Confirms that the user can rename an XmlTag, by checking that the element's old name has changed
@@ -287,6 +287,45 @@ class TestDocElements {
         assertFalse(xmlDoc.listAllElements.toString().contains("ancientTag"))
         assertTrue(xmlDoc.listAllElements.toString().contains("renamedTag"))
         assertTrue(xmlDoc.listAllElements.contains(newChildTag))
+    }
+
+    /**
+     * Assesses that the user is able to rename attributes of a tag in a certain document.
+     * This test checks that:
+     * - A new tag with attributes has been added to the document
+     * - The tag the user added contains the right attribute value mapped to the right attribute name
+     * - The attributes after the renaming are different from the ones before
+     * - After the renaming, the tag contains the right attribute value mapped to the new attribute name
+     * - The attribute names before and after the renaming are different
+     * - The attribute values before and after the renaming are the exact same, meaning their order remains unchanged
+     */
+    @Test
+    fun shouldBeAbleToRenameAttribute() {
+        val newTagName = "newTagWithAttributes"
+        val newTagWithAttributes = XmlTag(newTagName, rootTag, mutableMapOf(Pair("oldName", "valueToRemain")))
+        xmlDoc.addElementToDoc(newTagWithAttributes)
+        xmlDoc.addAttributeToTag(newTagName, "anotherAttr", "anotherValue")
+        xmlDoc.addAttributeToTag(newTagName, "someOtherAttr", "yetAnotherValue")
+        xmlDoc.addAttributeToTag(newTagName, "lastAttr", "lastAnotherValue")
+
+        assertTrue(xmlDoc.listAllElements.contains(newTagWithAttributes))
+
+        xmlDoc.listAllElements.forEach {
+            if (it is XmlTag && it.name == newTagName) assertEquals("valueToRemain", it.getTagAttributes["oldName"])
+        }
+
+        val oldAttributes = newTagWithAttributes.getTagAttributes
+
+        xmlDoc.renameAttributesInDoc(newTagName, "oldName", "newName")
+
+        val newAttributes = newTagWithAttributes.getTagAttributes
+        assertNotEquals(newAttributes, oldAttributes)
+
+        xmlDoc.listAllElements.forEach {
+            if (it is XmlTag && it.name == newTagName) assertEquals("valueToRemain", it.getTagAttributes["newName"])
+        }
+        assertNotEquals(oldAttributes.keys, newAttributes.keys)
+        assertIterableEquals(oldAttributes.values, newAttributes.values)
     }
 
 

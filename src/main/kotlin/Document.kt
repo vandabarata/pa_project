@@ -74,6 +74,38 @@ class Document(
         updateElementList()
     }
 
+    /**
+     * Renames a certain attribute in the Document. This only renames the attribute if:
+     * - The tag to which it belongs exists in the document,
+     * - The given old name of the attribute exists in the map of attributes of that tag
+     *
+     * This method works by first finding the tag that corresponds to the given tagName,
+     * then it retrieves the current value of the given attribute's current name (attrOldName),
+     * then it iterates through a list of the keys of the map,
+     * adding the new attibute name as key, mapped with the current value, right before the old attribute's name.
+     * If this operation is successful, it then proceeds to remove the old attribute's name entry in the map,
+     * making sure to only remove it if we were able to add the new attribute's name, with the same value.
+     *
+     * @param tagName The tag where the attribute to be renamed belongs.
+     * @param attrOldName The current attribute's name (map key), before the renaming.
+     * @param attrNewName The new attribute's name (map key), after the renaming.
+     */
+    fun renameAttributesInDoc(tagName: String, attrOldName: String, attrNewName: String) {
+        docRoot.accept {
+            if (it is XmlTag && it.name == tagName) {
+                val oldAttributes = it.getTagAttributes
+                val currentValue = oldAttributes.getValue(attrOldName)
+
+                val attributesList = oldAttributes.toList().toMutableList()
+                attributesList[attributesList.indexOf(Pair(attrOldName, currentValue))] = Pair(attrNewName, currentValue)
+                val newAttributesMap = attributesList.toMap() as MutableMap<String, String>
+                it.changeAttributesMap(newAttributesMap)
+            }
+            true
+        }
+        updateElementList()
+    }
+
 
     /**
      * Removes the XmlElement from its parent's children list, as well as from the Document's list of elements.
