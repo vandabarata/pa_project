@@ -178,7 +178,7 @@ class TestDocElements {
         assertTrue(xmlDoc.listAllElements.contains(contentToBeAdded))
     }
 
-    // ------------------- Tests for Adding and Removing Attributes ------------------- \\
+    // ------------------- Tests for Adding and Removing Attributes in XmlTags ------------------- \\
 
     /**
      * Confirms that a user can always access a tag's attributes,
@@ -273,7 +273,7 @@ class TestDocElements {
         }
     }
 
-    // ------------------- Tests for Renaming Document Elements ------------------- \\
+    // ------------------- Tests for manipulating Document Elements ------------------- \\
 
     /**
      * Confirms that the user can rename an XmlTag, by checking that the element's old name has changed
@@ -326,6 +326,26 @@ class TestDocElements {
         }
         assertNotEquals(oldAttributes.keys, newAttributes.keys)
         assertIterableEquals(oldAttributes.values, newAttributes.values)
+    }
+
+    /**
+     * Confirms that user can remove an attribute from a tag belonging to a Document by
+     * giving a tag name and the attribute's name.
+     */
+    @Test
+    fun shouldBeAbleToRemoveAttributeFromDocTag() {
+        xmlDoc.addElementToDoc(XmlTag("tagToTest", rootTag,
+            tagAttributes = mutableMapOf(Pair("attributeToRemove", "some value"))))
+
+        xmlDoc.listAllElements.forEach {
+            if (it is XmlTag && it.name == "tagToTest") assertTrue(it.getTagAttributes.containsKey("attributeToRemove"))
+        }
+
+        xmlDoc.removeAttributesFromTagInDoc("tagToTest", "attributeToRemove")
+
+        xmlDoc.listAllElements.forEach {
+            if (it is XmlTag && it.name == "tagToTest") assertFalse(it.getTagAttributes.containsKey("attributeToRemove"))
+        }
     }
 
 
