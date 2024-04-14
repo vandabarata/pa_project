@@ -60,6 +60,20 @@ class Document(
         updateElementList()
     }
 
+    /**
+     * Finds XmlTags with the oldName and renames them with the given newName.
+     *
+     * @param oldName The XmlTag's current name in the Document.
+     * @param newName The new XmlTag's name in the Document.
+     */
+    fun renameTagInDoc(oldName: String, newName: String) {
+        docRoot.accept {
+            if (it is XmlTag && it.name == oldName) it.name = newName
+            true
+        }
+        updateElementList()
+    }
+
 
     /**
      * Removes the XmlElement from its parent's children list, as well as from the Document's list of elements.

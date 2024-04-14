@@ -273,4 +273,21 @@ class TestDocElements {
         }
     }
 
+    // ------------------- Tests for Renaming XmlTags ------------------- \\
+
+    /**
+     * Confirms that the user can rename an XmlTag, by checking that the element's old name has changed
+     * to the new given name, and that the element itself still exists in the Document.
+     */
+    @Test
+    fun shouldBeAbleToRenameATag() {
+        val newChildTag = XmlTag("ancientTag", rootTag)
+        xmlDoc.addElementToDoc(newChildTag)
+        xmlDoc.renameTagInDoc("ancientTag", "renamedTag")
+        assertFalse(xmlDoc.listAllElements.toString().contains("ancientTag"))
+        assertTrue(xmlDoc.listAllElements.toString().contains("renamedTag"))
+        assertTrue(xmlDoc.listAllElements.contains(newChildTag))
+    }
+
+
 }
