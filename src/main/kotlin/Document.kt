@@ -106,6 +106,18 @@ class Document(
         updateElementList()
     }
 
+    /**
+     * Removes an attribute from a certain tag in the Document.
+     *
+     * @param tagName The name of the tag where the attribute belongs.
+     * @param attributeName The name of the attribute to be removed.
+     */
+    fun removeAttributesFromTagInDoc(tagName: String, attributeName: String) {
+        docRoot.accept {
+            if (it is XmlTag && it.name == tagName) it.removeAttribute(attributeName)
+            true
+        }
+    }
 
     /**
      * Removes the XmlElement from its parent's children list, as well as from the Document's list of elements.
