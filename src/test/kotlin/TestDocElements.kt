@@ -353,8 +353,8 @@ class TestDocElements {
 
     @Test
     fun letsTestStrings() {
-        println(xmlDoc.listAllElements)
-        // println(xmlDoc.pretty())
+        // println(xmlDoc.listAllElements)
+        println(xmlDoc.pretty())
     }
 
 }

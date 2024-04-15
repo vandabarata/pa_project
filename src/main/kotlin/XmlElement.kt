@@ -98,7 +98,7 @@ data class XmlTag(
     override fun toString(): String {
 /*        return if(children.isEmpty()) "something"
         else "<$name></$name>\n"*/
-        var toPrint = ""
+        // var toPrint = ""
         var openTag = "<$name"
         var closeTag = ""
 
@@ -114,17 +114,15 @@ data class XmlTag(
             else "</$name>"
         }
 
-        val tagContent = children.filterIsInstance<XmlTagContent>()
-
-        if (children.isNotEmpty()) {
+        /*if (children.isNotEmpty()) {
             children.forEach {
-                if (it is XmlTagContent) toPrint += it
+                if (it is XmlTagContent) toPrint = it.toString()
+                else toPrint += "\t\n"
             }
-        }
-
+        }*/
         closeTag += "\n"
 
-        return openTag + toPrint + closeTag
+        return openTag + closeTag
     }
 
 }
@@ -149,6 +147,6 @@ data class XmlTagContent(
     }
 
     override fun toString(): String {
-        return "<${parent.name}>$name</${parent.name}>"
+        return name
     }
 }
