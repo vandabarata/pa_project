@@ -353,8 +353,22 @@ class TestDocElements {
 
     @Test
     fun letsTestStrings() {
+        val plano = XmlTag("plano")
+        val curso = XmlTag("curso", parent = plano)
+        val mei = XmlTagContent("Mestrado em Engenharia Informática", parent = curso)
+        val fuc1 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "M4310")))
+        val fuc1nome = XmlTag("nome", parent = fuc1)
+        val fuc1texto = XmlTagContent("Programação Avançada", parent = fuc1nome)
+        val fuc1ects = XmlTag("ects", parent = fuc1)
+        val fuc1ectstexto = XmlTagContent("6.0", parent = fuc1ects)
+        val avaliacao = XmlTag("avaliacao", parent = fuc1)
+        val componenteavaliacao1 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
+        val componenteavaliacao2 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
+
+        val testDoc = Document(XmlHeader(), plano)
+
         // println(xmlDoc.listAllElements)
-        println(xmlDoc.pretty())
+        println(testDoc.pretty())
     }
 
 }

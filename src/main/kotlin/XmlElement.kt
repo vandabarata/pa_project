@@ -96,33 +96,31 @@ data class XmlTag(
             get() = tagAttributes
 
     override fun toString(): String {
-/*        return if(children.isEmpty()) "something"
-        else "<$name></$name>\n"*/
-        // var toPrint = ""
         var openTag = "<$name"
         var closeTag = ""
 
         if (tagAttributes.isEmpty())  {
             openTag += ">"
-            closeTag = "</$name>"
+            closeTag = "</$name>\n"
         }
         else {
             tagAttributes.forEach {
                 openTag += " ${it.key}=\"${it.value}\""
             }
+            openTag += ">"
             closeTag = if (children.isEmpty()) "/>"
             else "</$name>"
         }
 
-        /*if (children.isNotEmpty()) {
-            children.forEach {
-                if (it is XmlTagContent) toPrint = it.toString()
-                else toPrint += "\t\n"
-            }
-        }*/
-        closeTag += "\n"
+        if (children.isNotEmpty()) {
+            if (children[0] is XmlTag) openTag += "\n"
+        }
 
-        return openTag + closeTag
+        val childrenXml = children.joinToString("\n") {
+            it.toString()
+        }
+
+        return openTag + childrenXml + closeTag
     }
 
 }

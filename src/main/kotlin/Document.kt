@@ -155,9 +155,10 @@ class Document(
 
     fun pretty(): String {
         updateElementList()
-        var toPrint = ""
+
+        var toPrint = docHeader + "\n"
         docRoot.accept {
-            toPrint += it.toString()
+            toPrint += it.toString() + "\n"
             true
         }
         return toPrint
