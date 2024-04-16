@@ -1,12 +1,14 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.nio.file.Files
 
 /**
  * Tests to assess the correct behaviour of each Xml Element
  */
 class TestDocElements {
     private val xmlSampleFile = File("src/test/resources/XmlSampleFromMainProblem")
+    private val xmlResultFile = File("src/test/resources/XmlResult")
 
     // ------------------- Tests for XML Header ------------------- \\
 
@@ -51,7 +53,7 @@ class TestDocElements {
     private val randomTag = XmlTag("random")
 
     // XmlTagContent / Leaf Elements
-    private val aTagContent = XmlTagContent("aTagContent", childOfRootChildTag)
+    private val aTagWithContent = XmlTagWithContent("aTagWithContent", childOfRootChildTag, "content")
 
     // Document
     private val xmlDoc = Document(XmlHeader(), rootTag)
@@ -91,14 +93,11 @@ class TestDocElements {
     }
 
     /**
-     * Confirms user is able to add an XmlTagContent to an XmtTag (without children), and a Document,
-     * and also that user can't add an XmlTagContent to an XmlTag that already has children.
-     *
+     * Confirms user is able to add an XmlTagContent to an XmtTag (without children), and a Document.
      */
     @Test
     fun shouldBeAbleToAddXmlTagContent() {
-        assertTrue(xmlDoc.listAllElements.contains(aTagContent))
-        assertThrows(IllegalArgumentException::class.java) { XmlTagContent("something", rootTag) }
+        assertTrue(xmlDoc.listAllElements.contains(aTagWithContent))
     }
 
 
@@ -110,7 +109,7 @@ class TestDocElements {
      */
     @Test
     fun shouldBeAbleToRemoveXmlTagContent() {
-        val deepesteChildTagContent = XmlTagContent("deepestChildTagContent", childOfAnotherRootChildTag)
+        val deepesteChildTagContent = XmlTagWithContent("deepestChildTagContent", childOfAnotherRootChildTag, "someContent")
         xmlDoc.addElementToDoc(deepesteChildTagContent)
 
         assertTrue(xmlDoc.listAllElements.contains(deepesteChildTagContent))
@@ -170,7 +169,7 @@ class TestDocElements {
         val rootTagToBeAdded = XmlTag("rootTagToBeAdded")
         val randomTagChild = XmlTag("randomChild", randomTag)
         val normalTagToBeAdded = XmlTag("normalTagToBeAdded", childOfAnotherRootChildTag)
-        val contentToBeAdded = XmlTagContent("content", normalTagToBeAdded)
+        val contentToBeAdded = XmlTagWithContent("content", normalTagToBeAdded, "content of content")
 
         assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(rootTagToBeAdded) }
         assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(randomTagChild) }
@@ -351,24 +350,37 @@ class TestDocElements {
         }
     }
 
+    /**
+     * Creates an element structure like the one given in the Advanced Programming class example,
+     * and then adds it to a document for comparison with the example file from class.
+     */
     @Test
-    fun letsTestStrings() {
+    fun convertingDocToXmlShouldCreateFileCorrectly() {
         val plano = XmlTag("plano")
-        val curso = XmlTag("curso", parent = plano)
-        val mei = XmlTagContent("Mestrado em Engenharia Informática", parent = curso)
+        val curso = XmlTagWithContent("curso", parent = plano, "Mestrado em Engenharia Informática")
         val fuc1 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "M4310")))
-        val fuc1nome = XmlTag("nome", parent = fuc1)
-        val fuc1texto = XmlTagContent("Programação Avançada", parent = fuc1nome)
-        val fuc1ects = XmlTag("ects", parent = fuc1)
-        val fuc1ectstexto = XmlTagContent("6.0", parent = fuc1ects)
+        val fuc1texto = XmlTagWithContent("nome", parent = fuc1, "Programação Avançada")
+        val fuc1ectstexto = XmlTagWithContent("ects", parent = fuc1, "6.0")
         val avaliacao = XmlTag("avaliacao", parent = fuc1)
         val componenteavaliacao1 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
         val componenteavaliacao2 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
 
+        val fuc2 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "03782")))
+        val fuc2texto = XmlTagWithContent("nome", parent = fuc2, "Dissertação")
+        val fuc2ectstexto = XmlTagWithContent("ects", parent = fuc2, "42.0")
+        val avaliacao2 = XmlTag("avaliacao", parent = fuc2)
+        val componenteavaliacao21 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Dissertação"), Pair("peso", "60%")))
+        val componenteavaliacao22 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Apresentação"), Pair("peso", "20%")))
+        val componenteavaliacao23 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Discussão"), Pair("peso", "20%")))
+
         val testDoc = Document(XmlHeader(), plano)
 
-        // println(xmlDoc.listAllElements)
-        println(testDoc.pretty())
+        // will create file if it doesn't exist, or rewrite it if it exists
+        testDoc.writeXmlToFile(xmlResultFile.toString())
+
+        val mismatch = Files.mismatch(xmlResultFile.toPath(), xmlSampleFile.toPath())
+        // mismatch returns -1 if the files' contents match
+        assertEquals(-1, mismatch)
     }
 
 }

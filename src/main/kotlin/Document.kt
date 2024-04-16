@@ -1,3 +1,5 @@
+import java.io.File
+
 /**
  * Creates an entity called Document, which is the class that contains all elements that compose an XML Document.
  *
@@ -153,15 +155,8 @@ class Document(
         XML Elements: $allElements
     """.trimIndent()
 
-    fun pretty(): String {
-        updateElementList()
-
-        var toPrint = docHeader + "\n"
-        docRoot.accept {
-            toPrint += it.toString() + "\n"
-            true
-        }
-        return toPrint
+    fun writeXmlToFile(file: String) {
+        File(file).writeText(docHeader + "\n" + docRoot.turnToXml().trimEnd())
     }
 
 }

@@ -20,6 +20,14 @@ sealed interface XmlElement {
     fun accept(visitor: (XmlElement) -> Boolean) {
         visitor(this)
     }
+
+    /**
+     * Turns an XmlElement into its official XML format.
+     *
+     * @param tabulation The amount of tabulation it should use.
+     * @return The String representation of the XML Element.
+     */
+    fun turnToXml(tabulation: Int = 0): String
 }
 
 /**
@@ -44,6 +52,24 @@ data class XmlTag(
 
     init {
         parent?.children?.add(this)
+    }
+
+    /**
+     * Since there isn't a list of parents for each element, this function allows us to
+     * count how many parents an XmlTag has, so we can use that amount to indent the XML file.
+     *
+     * @return How many parents the current XmlElement is under.
+     */
+    private fun countParents(): Int {
+        var count = 0
+        var currentParent = parent
+
+        while (currentParent != null) {
+            count++
+            currentParent = currentParent.parent
+        }
+
+        return count
     }
 
     /**
@@ -95,56 +121,86 @@ data class XmlTag(
     val getTagAttributes: MutableMap<String, String>
             get() = tagAttributes
 
-    override fun toString(): String {
-        var openTag = "<$name"
-        var closeTag = ""
+    /**
+     * Formats an XmlTag and its children into a proper XML format.
+     * Starts by adding indentation according to the tabulation value provided,
+     * both to the opening and closing tags, so that each element is coherent.
+     *
+     * If the tag has no attributes, its tags show up in the usual <tag>\n</tag> format,
+     * so it sets the opening and closing tags to the format shown above.
+     *
+     * If there are attributes, however, then they can be shown in two different ways:
+     * - If there's only one, it should look like <tag attributeName="attributeValue">\n</tag>
+     * - If there's more than one, then there should be no children and the tag should close in the same line,
+     *   and look like <tag attributeName="attributeValue" attributeName="attributeValue"/>.
+     *
+     * After all of this, we then reach the part where we iterate through the XmlTag's children
+     * and call this function for each one of them.
+     * To ensure the XML elements are formatted correctly, we start by adding the number of tabs to each element
+     * according to how many parents it has. Then, each element is formatted like the explanation above.
+     * In the end, all of this is returned in a single String, formatted properly, ready to be written into an XML file.
+     *
+     * @param tabulation The amount of indents to use, when converting to XML.
+     * @return String with properly formatted XML for this XmlTag and all of its nested elements.
+     */
+    override fun turnToXml(tabulation: Int): String {
+
+        var openTag = "\t".repeat(tabulation)
+        var closeTag = openTag
+
+        openTag += "<$name"
 
         if (tagAttributes.isEmpty())  {
-            openTag += ">"
-            closeTag = "</$name>\n"
+            openTag += ">\n"
+            closeTag += "</$name>\n"
         }
         else {
-            tagAttributes.forEach {
-                openTag += " ${it.key}=\"${it.value}\""
+            if (tagAttributes.size == 1) {
+                val onlyAttribute = tagAttributes.toList()[0]
+                openTag += " ${onlyAttribute.first}=\"${onlyAttribute.second}\">\n"
+            } else {
+                tagAttributes.forEach { openTag += " ${it.key}=\"${it.value}\"" }
             }
-            openTag += ">"
-            closeTag = if (children.isEmpty()) "/>"
-            else "</$name>"
+
+            if (children.isEmpty()) closeTag = "/>\n"
+            else closeTag += "</$name>\n"
         }
 
-        if (children.isNotEmpty()) {
-            if (children[0] is XmlTag) openTag += "\n"
-        }
-
-        val childrenXml = children.joinToString("\n") {
-            it.toString()
-        }
+        var childrenXml = ""
+        val nrOfTabs = countParents() + 1
+        childrenXml =  children.joinToString("") { it.turnToXml(nrOfTabs) }
 
         return openTag + childrenXml + closeTag
     }
-
 }
 
 /**
- * This class represents the XML tag content.
- * This is basically the textual content of each tag, and it's considered the leaf element.
- * This can never have other children elements.
+ * This class represents an XML Tag with textual content.
+ * The name of the tag represents what shows as the <name></name> and the content is what shows inbetween.
+ * It's considered the leaf element, as it can never have other children elements.
  *
- * @property name The text to be presented as the tag content.
- * @property parent The tag which this content belongs to.
+ * @property name The text to be presented as the tag name.
+ * @property parent The tag under which this is nested.
+ * @property content The actual content to be shown inbetween the tags.
  * @constructor Adds this tag content to an existing tag or nested tags (parent element(s)).
  */
-data class XmlTagContent(
+data class XmlTagWithContent(
     override var name: String,
-    override val parent: XmlTag
+    override val parent: XmlTag,
+    val content: String
 ) : XmlElement {
 
     init {
-        if (parent.children.isEmpty()) parent.children.add(this)
-        else throw IllegalArgumentException("Can't add tag content to a tag that has other nested elements.")
+        parent.children.add(this)
     }
 
-    override fun toString(): String {
-        return name
+    /**
+     * Shows this element as its XML equivalent, which is basically <name>content</name>.
+     *
+     * @param tabulation The amount of indents to use, when converting to XML.
+     * @return The String representation of the XML Tag with Content.
+     */
+    override fun turnToXml(tabulation: Int): String {
+        return "\t".repeat(tabulation) + "<$name>$content</$name>\n"
     }
 }
