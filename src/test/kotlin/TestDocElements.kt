@@ -350,31 +350,33 @@ class TestDocElements {
         }
     }
 
+    // ------------------- Tests for Document Elements as XML ------------------- \\
+
+    private val plano = XmlTag("plano")
+    private val curso = XmlTagWithContent("curso", parent = plano, "Mestrado em Engenharia Informática")
+    private val fuc1 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "M4310")))
+    private val fuc1texto = XmlTagWithContent("nome", parent = fuc1, "Programação Avançada")
+    private val fuc1ectstexto = XmlTagWithContent("ects", parent = fuc1, "6.0")
+    private val avaliacao = XmlTag("avaliacao", parent = fuc1)
+    private val componenteavaliacao1 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
+    private val componenteavaliacao2 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
+
+    private val fuc2 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "03782")))
+    private val fuc2texto = XmlTagWithContent("nome", parent = fuc2, "Dissertação")
+    private val fuc2ectstexto = XmlTagWithContent("ects", parent = fuc2, "42.0")
+    private val avaliacao2 = XmlTag("avaliacao", parent = fuc2)
+    private val componenteavaliacao21 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Dissertação"), Pair("peso", "60%")))
+    private val componenteavaliacao22 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Apresentação"), Pair("peso", "20%")))
+    private val componenteavaliacao23 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Discussão"), Pair("peso", "20%")))
+
+    private val testDoc = Document(XmlHeader(), plano)
+
     /**
      * Creates an element structure like the one given in the Advanced Programming class example,
      * and then adds it to a document for comparison with the example file from class.
      */
     @Test
     fun convertingDocToXmlShouldCreateFileCorrectly() {
-        val plano = XmlTag("plano")
-        val curso = XmlTagWithContent("curso", parent = plano, "Mestrado em Engenharia Informática")
-        val fuc1 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "M4310")))
-        val fuc1texto = XmlTagWithContent("nome", parent = fuc1, "Programação Avançada")
-        val fuc1ectstexto = XmlTagWithContent("ects", parent = fuc1, "6.0")
-        val avaliacao = XmlTag("avaliacao", parent = fuc1)
-        val componenteavaliacao1 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
-        val componenteavaliacao2 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
-
-        val fuc2 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "03782")))
-        val fuc2texto = XmlTagWithContent("nome", parent = fuc2, "Dissertação")
-        val fuc2ectstexto = XmlTagWithContent("ects", parent = fuc2, "42.0")
-        val avaliacao2 = XmlTag("avaliacao", parent = fuc2)
-        val componenteavaliacao21 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Dissertação"), Pair("peso", "60%")))
-        val componenteavaliacao22 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Apresentação"), Pair("peso", "20%")))
-        val componenteavaliacao23 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Discussão"), Pair("peso", "20%")))
-
-        val testDoc = Document(XmlHeader(), plano)
-
         // will create file if it doesn't exist, or rewrite it if it exists
         testDoc.writeXmlToFile(xmlResultFile.toString())
 
@@ -383,4 +385,41 @@ class TestDocElements {
         assertEquals(-1, mismatch)
     }
 
+    /**
+     * Asserts that user can get to required elements using a complete or partial xpath.
+     */
+    @Test
+    fun shouldBeAbleToFindRightElementsWithXpath() {
+        val expectedElementList = listOf(
+            "<componente nome=\"Quizzes\" peso=\"20%\"/>",
+            "<componente nome=\"Projeto\" peso=\"80%\"/>",
+            "<componente nome=\"Dissertação\" peso=\"60%\"/>",
+            "<componente nome=\"Apresentação\" peso=\"20%\"/>",
+            "<componente nome=\"Discussão\" peso=\"20%\"/>"
+            )
+
+        val completePathList = testDoc.getElementXmlFromXpath("fuc/avaliacao/componente")
+        val partialPathList = testDoc.getElementXmlFromXpath("fuc/componente")
+        val otherPartialPathList = testDoc.getElementXmlFromXpath("avaliacao/componente")
+
+        assertEquals(expectedElementList, completePathList)
+        assertEquals(expectedElementList, partialPathList)
+        assertEquals(expectedElementList, otherPartialPathList)
+    }
+
+    /**
+     * Confirms that no elements are returned if they don't exist in the Document,
+     * or if the given path isn't a valid xpath.
+     */
+    @Test
+    fun shouldntBeAbleToFindNonExistingElementsFromXpath() {
+        val nonExistingPathList = testDoc.getElementXmlFromXpath("")
+        assertTrue(nonExistingPathList.isEmpty())
+
+        val wrongPathList = testDoc.getElementXmlFromXpath("iscte/fuc/ects")
+        assertTrue(wrongPathList.isEmpty())
+
+        val invalidPathList = testDoc.getElementXmlFromXpath("not.a.valid.path")
+        assertTrue(invalidPathList.isEmpty())
+    }
 }
