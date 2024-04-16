@@ -155,6 +155,13 @@ class Document(
         XML Elements: $allElements
     """.trimIndent()
 
+    /**
+     * Turns this data structure into a valid XML file,
+     * by adding the XML Prolog (docHeader) and the XmlElements to it,
+     * formatted as XML.
+     *
+     * @param file The path to the file to be created, in a String format
+     */
     fun writeXmlToFile(file: String) {
         File(file).writeText(docHeader + "\n" + docRoot.turnToXml().trimEnd())
     }
