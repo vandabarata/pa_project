@@ -422,4 +422,11 @@ class TestDocElements {
         val invalidPathList = testDoc.getElementXmlFromXpath("not.a.valid.path")
         assertTrue(invalidPathList.isEmpty())
     }
+
+//    @Test
+//    fun testReflections() {
+//        val something = rootTag::class
+//
+//        println(something.declaredMemberProperties.joinToString("\n"))
+//    }
 }
