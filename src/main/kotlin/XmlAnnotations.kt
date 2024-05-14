@@ -24,21 +24,21 @@ val KClass<*>.orderedFields: List<KProperty<*>>
     }
 
 /**
- * Reads the value of a KProperty.
+ * Returns the value of a KProperty.
  *
  * Taken from https://stackoverflow.com/a/35539628
  *
  * @param R
- * @param instance
- * @param propertyName
- * @return
+ * @param obj The class we intend to get the property value from.
+ * @param propertyName The name of the property we want the value of.
+ * @return The value of the property.
  */
 @Suppress("UNCHECKED_CAST")
-fun <R> readInstanceProperty(instance: Any, propertyName: String): R {
-    val property = instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>
+fun <R> getPropertyValue(obj: Any, propertyName: String): R {
+    val property = obj::class.members.first { it.name == propertyName } as KProperty1<Any, *>
 
     // force invalid cast exception if incorrect type here
-    return property.get(instance) as R
+    return property.get(obj) as R
 }
 
 fun inference(obj: Any): XmlElement {
@@ -48,10 +48,18 @@ fun inference(obj: Any): XmlElement {
     val objectOrderedFields = obj::class.orderedFields
 
     val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
+    val children: MutableList<Any> = mutableListOf()
 
     objectOrderedFields.forEach {
-        if (it.hasAnnotation<TagAttribute>()) tagAttributesFromObj.add(Pair(it.name, readInstanceProperty(obj, it.name)))
+        if (it.hasAnnotation<TagAttribute>()) tagAttributesFromObj.add(Pair(it.name, getPropertyValue(obj, it.name)))
+        if (it is List<*>) it.forEach { child ->
+            inference(child!!)
+            children.add(child)
+        }
     }
+
+    if (tagAttributesFromObj.isNotEmpty() || children.isNotEmpty()) return XmlTag(tagName!!, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+    // else return XmlTagWithContent(tagName!!, "", "")
 
     // val tagAttributes = obj::class.orderedFields.map { it -> Pair<String, Any>(it.name, readInstanceProperty(obj, it.name)) }
     // println(tagAttributesFromObj)
