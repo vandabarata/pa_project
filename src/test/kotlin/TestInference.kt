@@ -23,6 +23,11 @@ class TestInference {
         assertEquals(mapOf(Pair("codigo", "M4310")), fucElement.getTagAttributes)
 
         val componenteElement = inference(c) as XmlTag
-        assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", 20)), componenteElement.getTagAttributes)
+        assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", "20")), componenteElement.getTagAttributes)
+    }
+
+    @Test
+    fun shouldSomething() {
+        inference(f)
     }
 }

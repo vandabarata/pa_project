@@ -1,19 +1,15 @@
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.*
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @Target(AnnotationTarget.CLASS)
-annotation class Tag(val tagName: String)
+annotation class Tag(val name: String)
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class TagAttribute(val showAttribute: Boolean = true)
 
-@Target(AnnotationTarget.CLASS)
-annotation class TagWithContent(val name: String, val content: String)
 
 /**
  * Returns a KClass' list of properties by the order of their initialization.
@@ -45,37 +41,58 @@ fun <R> getPropertyValue(obj: Any, propertyName: String): R {
     return property.get(obj) as R
 }
 
-fun inference(obj: Any): XmlElement {
-    val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()?.tagName
+fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
+    val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()?.name
                     else obj::class.simpleName
 
     val objectOrderedFields = obj::class.orderedFields
-
     val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
-    val children: MutableList<Any> = mutableListOf()
+    var hasChildren = false
+    val childrenLists: MutableMap<String, List<Any>> = mutableMapOf()
+    val tagsWithContent: MutableList<Pair<String, String>> = mutableListOf()
+    var tagContent: String = ""
+    var parentTagName: String = ""
 
     objectOrderedFields.forEach {
-        if (it.hasAnnotation<TagAttribute>()) tagAttributesFromObj.add(Pair(it.name, getPropertyValue(obj, it.name)))
-        if (it is List<*>) it.forEach { child ->
-            inference(child!!)
-            children.add(child)
+        val propertyName = it.name
+        val propertyValue: Any = getPropertyValue(obj, it.name)
+
+        if (it.hasAnnotation<TagAttribute>() && it.findAnnotation<TagAttribute>()!!.showAttribute) tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
+        else if (it.hasAnnotation<TagAttribute>() && !it.findAnnotation<TagAttribute>()!!.showAttribute) return@forEach
+
+        println(it.returnType.classifier)
+        if (it is List<*>) {
+            print("I'm a list!")
+            hasChildren = true
+            parentTagName = propertyName
+            val children: MutableList<Any> = mutableListOf()
+            it.forEach { child ->
+                children.add(child!!)
+            }
+            childrenLists.putIfAbsent(parentTagName, children)
+        }
+
+        // TODO Create tags with content
+        if (!it.hasAnnotation<TagAttribute>() && it.returnType.classifier !is List<*>) tagsWithContent.add(Pair(propertyName, propertyValue.toString()))
+    }
+
+    val xmlElementToReturn =
+        if (tagAttributesFromObj.isNotEmpty() || hasChildren) {
+            XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+        }
+        else XmlTagWithContent(tagName!!, parent as XmlTag, tagContent)
+
+    if (XmlTag::class == xmlElementToReturn::class && hasChildren) {
+        childrenLists.forEach { tag ->
+            val childParentTag = XmlTag(tag.key, xmlElementToReturn as XmlTag)
+            tag.value.forEach {
+                inference(it, XmlTag(tag.key, childParentTag))
+            }
         }
     }
 
-    if (tagAttributesFromObj.isNotEmpty() || children.isNotEmpty()) return XmlTag(tagName!!, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
-    // else return XmlTagWithContent(tagName!!, "", "")
-
-    // val tagAttributes = obj::class.orderedFields.map { it -> Pair<String, Any>(it.name, readInstanceProperty(obj, it.name)) }
-    // println(tagAttributesFromObj)
-
-    return XmlTag(tagName!!, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+    return xmlElementToReturn
 }
 
-fun createTags(annotatedRootTag: KClass<*>) {
-    if (annotatedRootTag::class.hasAnnotation<Tag>()) {
-        var tag: XmlTag
-
-    }
-}
 
 

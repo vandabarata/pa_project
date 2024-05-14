@@ -9,7 +9,6 @@ data class ComponenteAvaliacao (
 data class FUC (
     @TagAttribute
     val codigo: String,
-
     val nome: String,
     val ects: Double,
     val observacoes: String,
