@@ -15,6 +15,11 @@ annotation class TagAttribute(val showAttribute: Boolean = true)
 @Target(AnnotationTarget.CLASS)
 annotation class TagWithContent(val name: String, val content: String)
 
+/**
+ * Returns a KClass' list of properties by the order of their initialization.
+ *
+ * Taken from https://github.com/andre-santos-pt during Advanced Programming class.
+ */
 val KClass<*>.orderedFields: List<KProperty<*>>
     get() {
         require(isData) { "instance must be data class" }
@@ -24,14 +29,13 @@ val KClass<*>.orderedFields: List<KProperty<*>>
     }
 
 /**
- * Returns the value of a KProperty.
+ * Reads the value of a KProperty.
  *
  * Taken from https://stackoverflow.com/a/35539628
  *
- * @param R
- * @param obj The class we intend to get the property value from.
- * @param propertyName The name of the property we want the value of.
- * @return The value of the property.
+ * @param obj The object/ class we're retrieving the property value from.
+ * @param propertyName The name of the property we want to get the value of.
+ * @return The value of the object's property.
  */
 @Suppress("UNCHECKED_CAST")
 fun <R> getPropertyValue(obj: Any, propertyName: String): R {
