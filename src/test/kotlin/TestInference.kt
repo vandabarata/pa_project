@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class TestSerialization {
+class TestInference {
 
     private val c = ComponenteAvaliacao("Quizzes", 20)
     private val f = FUC("M4310", "Programação Avançada", 6.0, "la la...",

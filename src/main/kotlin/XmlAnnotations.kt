@@ -35,7 +35,7 @@ val KClass<*>.orderedFields: List<KProperty<*>>
  *
  * @param obj The object/ class we're retrieving the property value from.
  * @param propertyName The name of the property we want to get the value of.
- * @return The value of the object's property.
+ * @return The value of the property.
  */
 @Suppress("UNCHECKED_CAST")
 fun <R> getPropertyValue(obj: Any, propertyName: String): R {
