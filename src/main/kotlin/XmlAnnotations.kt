@@ -45,7 +45,7 @@ fun <R> getPropertyValue(obj: Any, propertyName: String): R {
 
 fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 
-    if (XmlTagWithContent::class == obj::class) {
+    if (obj::class == XmlTagWithContent::class) {
         return obj as XmlTagWithContent
     }
 
@@ -56,8 +56,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
     var hasChildren = false
     val mappedListsOfChildren: MutableMap<String, List<Any>> = mutableMapOf()
-    val tagsWithContent: MutableList<Pair<String, String>> = mutableListOf()
-    var tagContent: String = ""
+    val leafTags: MutableList<XmlTagWithContent> = mutableListOf()
 
     orderedParameters.forEach {
         // Skip if ignored field
@@ -67,47 +66,51 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         val propertyValue: Any = getPropertyValue(obj, propertyName)
 
         // Process attributes (fields with @TagAttribute annotation)
-        if (it.hasAnnotation<TagAttribute>()) tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
-
-        // Process child leaf tags (any field that doesn't have @TagAtrribute and isn't a List
-        if (!it.hasAnnotation<TagAttribute>() && propertyValue !is List<*>) {
-            tagContent = propertyValue.toString()
-            tagsWithContent.add(Pair(propertyName, tagContent))
+        if (it.hasAnnotation<TagAttribute>()) {
+            tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
+            return@forEach
         }
+    }
 
-        // Process child composite tags (any field that is a List)
-        if (propertyValue is List<*>) {
-            hasChildren = true
-            val children: MutableList<Any> = mutableListOf()
-            propertyValue.forEach { child ->
-                children.add(child!!)
+        val finalTag = XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+
+    orderedParameters.forEach {
+        val propertyName = it.name
+        val propertyValue: Any = getPropertyValue(obj, propertyName)
+        if (!it.hasAnnotation<TagAttribute>() && !it.hasAnnotation<Ignore>()) {
+            // Process child composite tags (any field that is a List)
+            if (propertyValue is List<*>) {
+                hasChildren = true
+                val children: MutableList<Any> = mutableListOf()
+                propertyValue.forEach { child ->
+                    children.add(child!!)
+                }
+                mappedListsOfChildren.putIfAbsent(propertyName, children)
             }
-            mappedListsOfChildren.putIfAbsent(propertyName, children)
+            // Process child leaf tags
+            else {
+                hasChildren = true
+
+                leafTags.add(XmlTagWithContent(propertyName, finalTag, propertyValue.toString()))
+                // inference(XmlTagWithContent(propertyName, parent?: XmlTag(tagName!!, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf())), propertyValue.toString()))
+            }
         }
     }
 
-    val currentParentTag = XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
-
-    tagsWithContent.forEach {
-        inference(XmlTagWithContent(it.first, parent?: currentParentTag , it.second))
-    }
-
-    val xmlElementToReturn =
-        if (tagAttributesFromObj.isNotEmpty() || hasChildren) {
-            currentParentTag
+    if (hasChildren) {
+        leafTags.forEach {
+            inference(it)
         }
-        else XmlTagWithContent(tagName, parent?: currentParentTag, tagContent)
 
-    if (XmlTag::class == xmlElementToReturn::class && hasChildren) {
         mappedListsOfChildren.forEach { tag ->
-            val childParentTag = XmlTag(tag.key, xmlElementToReturn as XmlTag)
+            val childParentTag = XmlTag(tag.key, finalTag)
             tag.value.forEach {
-                inference(it, XmlTag(tag.key, childParentTag))
+                inference(it, childParentTag)
             }
         }
     }
 
-    return xmlElementToReturn
+    return finalTag
 }
 
 

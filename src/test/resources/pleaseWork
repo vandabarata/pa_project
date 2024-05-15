@@ -3,11 +3,7 @@
 	<nome>Programação Avançada</nome>
 	<ects>6.0</ects>
 	<avaliacao>
-		<avaliacao>
-			<componente nome="Quizzes" peso="20"/>
-		</avaliacao>
-		<avaliacao>
-			<componente nome="Projeto" peso="80"/>
-		</avaliacao>
+		<componente nome="Quizzes" peso="20"/>
+		<componente nome="Projeto" peso="80"/>
 	</avaliacao>
 </FUC>
