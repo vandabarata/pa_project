@@ -7,7 +7,7 @@ import kotlin.reflect.full.*
 annotation class Tag(val name: String)
 
 @Target(AnnotationTarget.PROPERTY)
-annotation class TagAttribute(val showAttribute: Boolean = true)
+annotation class TagAttribute
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class Ignore
@@ -58,45 +58,45 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     val mappedListsOfChildren: MutableMap<String, List<Any>> = mutableMapOf()
     val tagsWithContent: MutableList<Pair<String, String>> = mutableListOf()
     var tagContent: String = ""
-    var parentTagName: String = ""
 
     orderedParameters.forEach {
+        // Skip if ignored field
+        if (it.hasAnnotation<Ignore>()) return@forEach
+
         val propertyName = it.name
         val propertyValue: Any = getPropertyValue(obj, propertyName)
 
-        // Process attributes
-        if (it.hasAnnotation<TagAttribute>() && it.findAnnotation<TagAttribute>()!!.showAttribute) tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
-        else if (it.hasAnnotation<TagAttribute>() && !it.findAnnotation<TagAttribute>()!!.showAttribute || it.hasAnnotation<Ignore>()) return@forEach
+        // Process attributes (fields with @TagAttribute annotation)
+        if (it.hasAnnotation<TagAttribute>()) tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
 
-        // Process child tags
+        // Process child leaf tags (any field that doesn't have @TagAtrribute and isn't a List
+        if (!it.hasAnnotation<TagAttribute>() && propertyValue !is List<*>) {
+            tagContent = propertyValue.toString()
+            tagsWithContent.add(Pair(propertyName, tagContent))
+        }
+
+        // Process child composite tags (any field that is a List)
         if (propertyValue is List<*>) {
             hasChildren = true
-            parentTagName = propertyName
             val children: MutableList<Any> = mutableListOf()
             propertyValue.forEach { child ->
                 children.add(child!!)
             }
-            mappedListsOfChildren.putIfAbsent(parentTagName, children)
-        }
-
-        // Process child leaf tags
-        if (!it.hasAnnotation<TagAttribute>() && propertyValue !is List<*>) {
-            tagContent = propertyValue.toString()
-            tagsWithContent.add(Pair(propertyName, tagContent))
+            mappedListsOfChildren.putIfAbsent(propertyName, children)
         }
     }
 
     val currentParentTag = XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
 
     tagsWithContent.forEach {
-        inference(XmlTagWithContent(it.first, currentParentTag, it.second))
+        inference(XmlTagWithContent(it.first, parent?: currentParentTag , it.second))
     }
 
     val xmlElementToReturn =
         if (tagAttributesFromObj.isNotEmpty() || hasChildren) {
             currentParentTag
         }
-        else XmlTagWithContent(tagName, currentParentTag, tagContent)
+        else XmlTagWithContent(tagName, parent?: currentParentTag, tagContent)
 
     if (XmlTag::class == xmlElementToReturn::class && hasChildren) {
         mappedListsOfChildren.forEach { tag ->

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FUC codigo="M4310">
+	<nome>Programação Avançada</nome>
+	<ects>6.0</ects>
+	<avaliacao>
+		<avaliacao>
+			<componente nome="Quizzes" peso="20"/>
+		</avaliacao>
+		<avaliacao>
+			<componente nome="Projeto" peso="80"/>
+		</avaliacao>
+	</avaliacao>
+</FUC>
