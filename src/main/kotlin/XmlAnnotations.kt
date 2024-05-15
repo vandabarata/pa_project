@@ -2,13 +2,15 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @Target(AnnotationTarget.CLASS)
 annotation class Tag(val name: String)
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class TagAttribute(val showAttribute: Boolean = true)
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class Ignore
 
 
 /**
@@ -42,48 +44,62 @@ fun <R> getPropertyValue(obj: Any, propertyName: String): R {
 }
 
 fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
+
+    if (XmlTagWithContent::class == obj::class) {
+        return obj as XmlTagWithContent
+    }
+
     val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()?.name
                     else obj::class.simpleName
 
-    val objectOrderedFields = obj::class.orderedFields
+    val orderedParameters = obj::class.orderedFields
     val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
     var hasChildren = false
-    val childrenLists: MutableMap<String, List<Any>> = mutableMapOf()
+    val mappedListsOfChildren: MutableMap<String, List<Any>> = mutableMapOf()
     val tagsWithContent: MutableList<Pair<String, String>> = mutableListOf()
     var tagContent: String = ""
     var parentTagName: String = ""
 
-    objectOrderedFields.forEach {
+    orderedParameters.forEach {
         val propertyName = it.name
-        val propertyValue: Any = getPropertyValue(obj, it.name)
+        val propertyValue: Any = getPropertyValue(obj, propertyName)
 
+        // Process attributes
         if (it.hasAnnotation<TagAttribute>() && it.findAnnotation<TagAttribute>()!!.showAttribute) tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
-        else if (it.hasAnnotation<TagAttribute>() && !it.findAnnotation<TagAttribute>()!!.showAttribute) return@forEach
+        else if (it.hasAnnotation<TagAttribute>() && !it.findAnnotation<TagAttribute>()!!.showAttribute || it.hasAnnotation<Ignore>()) return@forEach
 
-        println(it.returnType.classifier)
-        if (it is List<*>) {
-            print("I'm a list!")
+        // Process child tags
+        if (propertyValue is List<*>) {
             hasChildren = true
             parentTagName = propertyName
             val children: MutableList<Any> = mutableListOf()
-            it.forEach { child ->
+            propertyValue.forEach { child ->
                 children.add(child!!)
             }
-            childrenLists.putIfAbsent(parentTagName, children)
+            mappedListsOfChildren.putIfAbsent(parentTagName, children)
         }
 
-        // TODO Create tags with content
-        if (!it.hasAnnotation<TagAttribute>() && it.returnType.classifier !is List<*>) tagsWithContent.add(Pair(propertyName, propertyValue.toString()))
+        // Process child leaf tags
+        if (!it.hasAnnotation<TagAttribute>() && propertyValue !is List<*>) {
+            tagContent = propertyValue.toString()
+            tagsWithContent.add(Pair(propertyName, tagContent))
+        }
+    }
+
+    val currentParentTag = XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+
+    tagsWithContent.forEach {
+        inference(XmlTagWithContent(it.first, currentParentTag, it.second))
     }
 
     val xmlElementToReturn =
         if (tagAttributesFromObj.isNotEmpty() || hasChildren) {
-            XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+            currentParentTag
         }
-        else XmlTagWithContent(tagName!!, parent as XmlTag, tagContent)
+        else XmlTagWithContent(tagName, currentParentTag, tagContent)
 
     if (XmlTag::class == xmlElementToReturn::class && hasChildren) {
-        childrenLists.forEach { tag ->
+        mappedListsOfChildren.forEach { tag ->
             val childParentTag = XmlTag(tag.key, xmlElementToReturn as XmlTag)
             tag.value.forEach {
                 inference(it, XmlTag(tag.key, childParentTag))

@@ -11,6 +11,7 @@ data class FUC (
     val codigo: String,
     val nome: String,
     val ects: Double,
+    @Ignore
     val observacoes: String,
     val avaliacao: List<ComponenteAvaliacao>
 )

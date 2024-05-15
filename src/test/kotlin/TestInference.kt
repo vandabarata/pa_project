@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import javax.print.Doc
 
 class TestInference {
 
@@ -28,6 +29,7 @@ class TestInference {
 
     @Test
     fun shouldSomething() {
-        inference(f)
+        val testDoc = Document(XmlHeader(), inference(f) as XmlTag)
+        testDoc.writeXmlToFile("src/test/resources/pleaseWork")
     }
 }
