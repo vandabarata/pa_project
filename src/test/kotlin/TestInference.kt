@@ -12,6 +12,7 @@ class TestInference {
             ComponenteAvaliacao("Projeto", 80)
         )
     )
+    private val firstInferenceDoc = Document(rootElement = inference(f) as XmlTag)
 
     /**
      * Confirms that tags are created with correct name,
@@ -37,14 +38,14 @@ class TestInference {
 
     /**
      * Confirms that the inference is working as expected, by creating a document using the inferred tag
-     * as the root element, and comparing it to a document of the nesting and tagging that's expected.
+     * as the root element, and comparing it to a document of the final xml that's expected.
      */
     @Test
     fun inferenceShouldCreateDocumentCorrectly() {
         val inferenceFirstFile = File("src/test/resources/FirstInferenceExampleFromMainProblem")
         val testFirstInferenceFile = File("src/test/resources/testFirstInference")
 
-        Document(rootElement = inference(f) as XmlTag).writeXmlToFile(testFirstInferenceFile.toString())
+        firstInferenceDoc.writeXmlToFile(testFirstInferenceFile.toString())
 
         val mismatch = Files.mismatch(inferenceFirstFile.toPath(), testFirstInferenceFile.toPath())
         // mismatch returns -1 if the files' contents match
