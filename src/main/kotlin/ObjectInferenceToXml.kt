@@ -82,6 +82,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     // child leaf tags (XmlTagWithContent)
     val leafTags: MutableList<XmlTagWithContent> = mutableListOf()
 
+    // process attributes (and skip ignored fields)
     objectFields.forEach {
         // Skip if ignored field
         if (it.hasAnnotation<Ignore>()) return@forEach
@@ -99,6 +100,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     // this XmlTag is needed to further process its children, passing this one as their parent tag
     val finalTag = XmlTag(tagName, parent, tagAttributes = tagAttributes.toMap(mutableMapOf()))
 
+    // process other fields that are children XmlElements
     objectFields.forEach {
         // Skip already processed fields
         if (it.hasAnnotation<Ignore>()) return@forEach
