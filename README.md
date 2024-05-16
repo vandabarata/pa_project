@@ -1,4 +1,7 @@
-# Advanced Programming Project
-This is a project made in Kotlin for the Advanced Programming subject, in the context of the Master's in Computer Engineering at ISCTE.
+# Object Parser to XML
+_Library made for the Advanced Programming subject, in the context of the Master's in Computer Engineering at ISCTE-IUL._
+___
+![](https://img.shields.io/badge/language-kotlin-purple?style=for-the-badge&logo=kotlin&logoColor=ffffff)
 
-Don't forget [Badges/ Shields](https://shields.io/badges)
+![](https://img.shields.io/github/v/release/vandabarata/pa_project)
+![](https://img.shields.io/github/last-commit/vandabarata/pa_project/start-annotations-and-reflection-stuff?logo=github)
