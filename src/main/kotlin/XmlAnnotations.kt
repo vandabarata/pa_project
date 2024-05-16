@@ -49,8 +49,8 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         return obj as XmlTagWithContent
     }
 
-    val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()?.name
-                    else obj::class.simpleName
+    val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
+                    else obj::class.simpleName!!.lowercase()
 
     val orderedParameters = obj::class.orderedFields
     val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
@@ -72,29 +72,29 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         }
     }
 
-        val finalTag = XmlTag(tagName!!, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+    val finalTag = XmlTag(tagName, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
 
     orderedParameters.forEach {
+        // Skip already processed fields
+        if (it.hasAnnotation<Ignore>()) return@forEach
+        if (it.hasAnnotation<TagAttribute>()) return@forEach
+
         val propertyName = it.name
         val propertyValue: Any = getPropertyValue(obj, propertyName)
-        if (!it.hasAnnotation<TagAttribute>() && !it.hasAnnotation<Ignore>()) {
-            // Process child composite tags (any field that is a List)
-            if (propertyValue is List<*>) {
-                hasChildren = true
-                val children: MutableList<Any> = mutableListOf()
-                propertyValue.forEach { child ->
-                    children.add(child!!)
-                }
-                mappedListsOfChildren.putIfAbsent(propertyName, children)
-            }
-            // Process child leaf tags
-            else {
-                hasChildren = true
 
-                leafTags.add(XmlTagWithContent(propertyName, finalTag, propertyValue.toString()))
-                // inference(XmlTagWithContent(propertyName, parent?: XmlTag(tagName!!, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf())), propertyValue.toString()))
+        // if the code has gotten here, it means there's children tags
+        hasChildren = true
+
+        // Process child composite tags (any field that is a List)
+        if (propertyValue is List<*>) {
+            val children: MutableList<Any> = mutableListOf()
+            propertyValue.forEach { child ->
+                children.add(child!!)
             }
+            mappedListsOfChildren.putIfAbsent(propertyName, children)
         }
+        // Process child leaf tags
+        else leafTags.add(XmlTagWithContent(propertyName, finalTag, propertyValue.toString()))
     }
 
     if (hasChildren) {
