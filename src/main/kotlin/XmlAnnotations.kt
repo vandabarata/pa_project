@@ -49,16 +49,20 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         return obj as XmlTagWithContent
     }
 
-    val tagName =   if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
-                    else obj::class.simpleName!!.lowercase()
+    // process this object as a XmlTag with possible attributes
+    val tagName = getTagName(obj)
+    val objectFields = obj::class.orderedFields
+    val tagAttributes: MutableList<Pair<String, String>> = mutableListOf()
 
-    val orderedParameters = obj::class.orderedFields
-    val tagAttributesFromObj: MutableList<Pair<String, String>> = mutableListOf()
+    // assume there are no children unless proven otherwise
     var hasChildren = false
-    val mappedListsOfChildren: MutableMap<String, List<Any>> = mutableMapOf()
+
+    // map of this tag's child tags (XmlTag) with lists of their own child tags (XmlTag or XmlTagWithContent)
+    val childCompositeTags: MutableMap<String, List<Any>> = mutableMapOf()
+    // child leaf tags (XmlTagWithContent)
     val leafTags: MutableList<XmlTagWithContent> = mutableListOf()
 
-    orderedParameters.forEach {
+    objectFields.forEach {
         // Skip if ignored field
         if (it.hasAnnotation<Ignore>()) return@forEach
 
@@ -67,14 +71,15 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 
         // Process attributes (fields with @TagAttribute annotation)
         if (it.hasAnnotation<TagAttribute>()) {
-            tagAttributesFromObj.add(Pair(propertyName, propertyValue.toString()))
+            tagAttributes.add(Pair(propertyName, propertyValue.toString()))
             return@forEach
         }
     }
 
-    val finalTag = XmlTag(tagName, parent, tagAttributes = tagAttributesFromObj.toMap(mutableMapOf()))
+    // this XmlTag is needed to further process its children, passing this one as their parent tag
+    val finalTag = XmlTag(tagName, parent, tagAttributes = tagAttributes.toMap(mutableMapOf()))
 
-    orderedParameters.forEach {
+    objectFields.forEach {
         // Skip already processed fields
         if (it.hasAnnotation<Ignore>()) return@forEach
         if (it.hasAnnotation<TagAttribute>()) return@forEach
@@ -85,33 +90,41 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         // if the code has gotten here, it means there's children tags
         hasChildren = true
 
-        // Process child composite tags (any field that is a List)
+        // Process child composite tags (XmlTag) that may have their own children
         if (propertyValue is List<*>) {
             val children: MutableList<Any> = mutableListOf()
             propertyValue.forEach { child ->
                 children.add(child!!)
             }
-            mappedListsOfChildren.putIfAbsent(propertyName, children)
+            childCompositeTags.putIfAbsent(propertyName, children)
         }
-        // Process child leaf tags
+        // Process child leaf tags (XmlTagWithContent)
         else leafTags.add(XmlTagWithContent(propertyName, finalTag, propertyValue.toString()))
     }
 
+    // recursively process this tag's children, if there are any
     if (hasChildren) {
         leafTags.forEach {
             inference(it)
         }
 
-        mappedListsOfChildren.forEach { tag ->
-            val childParentTag = XmlTag(tag.key, finalTag)
+        childCompositeTags.forEach { tag ->
+            val compositeTagsParent = XmlTag(tag.key, finalTag)
             tag.value.forEach {
-                inference(it, childParentTag)
+                inference(it, compositeTagsParent)
             }
         }
     }
 
     return finalTag
 }
+
+fun getTagName(obj: Any): String {
+    return  if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
+            else obj::class.simpleName!!.lowercase()
+}
+
+
 
 
 
