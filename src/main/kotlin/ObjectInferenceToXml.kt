@@ -103,10 +103,10 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 }
 
 /**
- * Util function to infer a tag name from an object's class or annotation.
+ * Util function to infer XmlElement name from an object's class or annotation.
  *
  * @param obj Any class/ object.
- * @return The tag name infered from that class.
+ * @return The tag name inferred from that class.
  */
 private fun getTagName(obj: Any): String {
     return  if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
