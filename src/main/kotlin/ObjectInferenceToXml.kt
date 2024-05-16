@@ -82,9 +82,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         // Add child composite tags (XmlTag) that may have their own children to a map of tags linking them a list of their own children
         if (propertyValue is List<*>) {
             val children: MutableList<Any> = mutableListOf()
-            propertyValue.forEach { child ->
-                children.add(child!!)
-            }
+            propertyValue.forEach { child -> children.add(child!!) }
             childCompositeTags.putIfAbsent(propertyName, children)
         }
         // Add child leaf tags (XmlTagWithContent) to a list
@@ -93,15 +91,11 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 
     // recursively process this tag's children, if there are any
     if (hasChildren) {
-        leafTags.forEach {
-            inference(it)
-        }
+        leafTags.forEach { inference(it) }
 
         childCompositeTags.forEach { tag ->
             val compositeTagsParent = XmlTag(tag.key, finalTag)
-            tag.value.forEach {
-                inference(it, compositeTagsParent)
-            }
+            tag.value.forEach { inference(it, compositeTagsParent) }
         }
     }
 
