@@ -4,4 +4,4 @@ ___
 ![](https://img.shields.io/badge/language-kotlin-purple?style=for-the-badge&logo=kotlin&logoColor=ffffff)
 
 ![](https://img.shields.io/github/v/release/vandabarata/pa_project)
-![](https://img.shields.io/github/last-commit/vandabarata/pa_project/start-annotations-and-reflection-stuff?logo=github)
+![](https://img.shields.io/github/last-commit/vandabarata/pa_project/main?logo=github)
