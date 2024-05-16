@@ -94,7 +94,7 @@ data class XmlTag(
      * @param attributeValue The value that's going to be added or updated onto an existing attribute.
      */
     fun addOrEditAttribute(attributeKey: String, attributeValue: String) {
-        this.tagAttributes[attributeKey] = attributeValue
+        this.tagAttributes[attributeKey.replace(" ", "")] = attributeValue
     }
 
     /**
@@ -126,24 +126,25 @@ data class XmlTag(
      * Starts by adding indentation according to the tabulation value provided,
      * both to the opening and closing tags, so that each element is coherent.
      *
-     * If the tag has no attributes, its tags show up in the usual <tag>\n</tag> format,
-     * so it sets the opening and closing tags to the format shown above.
-     *
-     * If there are attributes, however, then they can be shown in two different ways:
-     * - If there's only one, it should look like <tag attributeName="attributeValue">\n</tag>
-     * - If there's more than one, then there should be no children and the tag should close in the same line,
-     *   and look like <tag attributeName="attributeValue" attributeName="attributeValue"/>.
-     *
-     * After all of this, we then reach the part where we iterate through the XmlTag's children
-     * and call this function for each one of them.
-     * To ensure the XML elements are formatted correctly, we start by adding the number of tabs to each element
-     * according to how many parents it has. Then, each element is formatted like the explanation above.
-     * In the end, all of this is returned in a single String, formatted properly, ready to be written into an XML file.
-     *
      * @param tabulation The amount of indents to use, when converting to XML.
      * @return String with properly formatted XML for this XmlTag and all of its nested elements.
      */
     override fun turnToXml(tabulation: Int): String {
+        /**
+         * If the tag has no attributes, its tags show up in the usual <tag>\n</tag> format,
+         * so it sets the opening and closing tags to the format shown above.
+         *
+         * If there are attributes, however, then they can be shown in two different ways:
+         * - If there's only one, it should look like <tag attributeName="attributeValue">\n</tag>
+         * - If there's more than one, then there should be no children and the tag should close in the same line,
+         *   and look like <tag attributeName="attributeValue" attributeName="attributeValue"/>.
+         *
+         * After all of this, we then reach the part where we iterate through the XmlTag's children
+         * and call this function for each one of them.
+         * To ensure the XML elements are formatted correctly, we start by adding the number of tabs to each element
+         * according to how many parents it has. Then, each element is formatted like the explanation above.
+         * In the end, all of this is returned in a single String, formatted properly, ready to be written into an XML file.
+         */
 
         var openTag = "\t".repeat(tabulation)
         var closeTag = openTag

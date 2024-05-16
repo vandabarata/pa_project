@@ -10,7 +10,7 @@ import java.io.File
  * @param rootElement The XmlTag under where all other elements are nested.
  */
 class Document(
-    header: XmlHeader,
+    header: XmlHeader = XmlHeader(),
     rootElement: XmlTag) {
 
     private val docHeader: String = header.toString()
@@ -18,18 +18,7 @@ class Document(
     private val allElements = mutableListOf<XmlElement>()
 
     init {
-        updateElementList()
-    }
-
-    /**
-     * Makes sure to clear the list of elements and update it, by iterating through the children of the root tag again.
-     */
-    private fun updateElementList() {
-        allElements.clear()
-        docRoot.accept {
-            allElements.add(it)
-            true
-        }
+        visitElements()
     }
 
     val listAllElements: List<XmlElement>
@@ -81,18 +70,20 @@ class Document(
      * - The tag to which it belongs exists in the document,
      * - The given old name of the attribute exists in the map of attributes of that tag
      *
-     * This method works by first finding the tag that corresponds to the given tagName,
-     * then it retrieves the current value of the given attribute's current name (attrOldName),
-     * then it iterates through a list of the keys of the map,
-     * adding the new attibute name as key, mapped with the current value, right before the old attribute's name.
-     * If this operation is successful, it then proceeds to remove the old attribute's name entry in the map,
-     * making sure to only remove it if we were able to add the new attribute's name, with the same value.
-     *
      * @param tagName The tag where the attribute to be renamed belongs.
      * @param attrOldName The current attribute's name (map key), before the renaming.
      * @param attrNewName The new attribute's name (map key), after the renaming.
      */
     fun renameAttributesInDoc(tagName: String, attrOldName: String, attrNewName: String) {
+        /**
+         * This method works by first finding the tag that corresponds to the given tagName,
+         * then it retrieves the current value of the given attribute's current name (attrOldName),
+         * then it iterates through a list of the keys of the map,
+         * adding the new attibute name as key, mapped with the current value, right before the old attribute's name.
+         * If this operation is successful, it then proceeds to remove the old attribute's name entry in the map,
+         * making sure to only remove it if we were able to add the new attribute's name, with the same value.
+         */
+
         docRoot.accept {
             if (it is XmlTag && it.name == tagName) {
                 val oldAttributes = it.getTagAttributes
@@ -233,5 +224,24 @@ class Document(
             xmlList.add(it.turnToXml().trimEnd())
         }
         return xmlList
+    }
+
+    /**
+     * Makes sure to clear the list of elements and update it,
+     * by iterating through the children of the root tag again.
+     */
+    private fun updateElementList() {
+        allElements.clear()
+        visitElements()
+    }
+
+    /**
+     * Iterates through all the root Element's children and adds them to the element list.
+     */
+    private fun visitElements() {
+        docRoot.accept {
+            allElements.add(it)
+            true
+        }
     }
 }
