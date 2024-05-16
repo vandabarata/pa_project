@@ -24,7 +24,7 @@ annotation class TagAttribute
 @Target(AnnotationTarget.PROPERTY)
 annotation class Ignore
 
-
+// _______________________________ Objects Inference _______________________________ \\
 /**
  * Returns a KClass' list of properties by the order of their initialization.
  *

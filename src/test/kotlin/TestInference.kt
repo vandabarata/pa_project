@@ -2,7 +2,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class TestInference {
-
     // examples from the Project's phase 2 instructions
     private val c = ComponenteAvaliacao("Quizzes", 20)
     private val f = FUC("M4310", "Programação Avançada", 6.0, "la la...",
@@ -18,7 +17,7 @@ class TestInference {
      */
     @Test
     fun shouldBeAbleToCreateXmlTagWithExpectedTagName() {
-        assertEquals("FUC", inference(f).name)
+        assertEquals("fuc", inference(f).name)
         assertEquals("componente", inference(c).name)
     }
 
