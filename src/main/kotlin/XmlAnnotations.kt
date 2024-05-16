@@ -3,12 +3,24 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
 
+/**
+ * Annotation to be used when considering a different
+ * XmlElement name than the class' being inferred.
+ *
+ * @property name The intended XmlElement name to be used.
+ */
 @Target(AnnotationTarget.CLASS)
 annotation class Tag(val name: String)
 
+/**
+ * Annotation to identify any class property as a tag's attribute.
+ */
 @Target(AnnotationTarget.PROPERTY)
 annotation class TagAttribute
 
+/**
+ * Annotation used to ignore a class' property when inferring an XmlElement.
+ */
 @Target(AnnotationTarget.PROPERTY)
 annotation class Ignore
 
