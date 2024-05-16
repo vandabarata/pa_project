@@ -10,7 +10,7 @@ import java.io.File
  * @param rootElement The XmlTag under where all other elements are nested.
  */
 class Document(
-    header: XmlHeader,
+    header: XmlHeader = XmlHeader(),
     rootElement: XmlTag) {
 
     private val docHeader: String = header.toString()
@@ -18,18 +18,7 @@ class Document(
     private val allElements = mutableListOf<XmlElement>()
 
     init {
-        updateElementList()
-    }
-
-    /**
-     * Makes sure to clear the list of elements and update it, by iterating through the children of the root tag again.
-     */
-    private fun updateElementList() {
-        allElements.clear()
-        docRoot.accept {
-            allElements.add(it)
-            true
-        }
+        visitElements()
     }
 
     val listAllElements: List<XmlElement>
@@ -235,5 +224,24 @@ class Document(
             xmlList.add(it.turnToXml().trimEnd())
         }
         return xmlList
+    }
+
+    /**
+     * Makes sure to clear the list of elements and update it,
+     * by iterating through the children of the root tag again.
+     */
+    private fun updateElementList() {
+        allElements.clear()
+        visitElements()
+    }
+
+    /**
+     * Iterates through all the root Element's children and adds them to the element list.
+     */
+    private fun visitElements() {
+        docRoot.accept {
+            allElements.add(it)
+            true
+        }
     }
 }

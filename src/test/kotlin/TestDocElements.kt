@@ -56,7 +56,7 @@ class TestDocElements {
     private val aTagWithContent = XmlTagWithContent("aTagWithContent", childOfRootChildTag, "content")
 
     // Document
-    private val xmlDoc = Document(XmlHeader(), rootTag)
+    private val xmlDoc = Document(rootElement =  rootTag)
 
     /**
      * Confirms the correct creation and nesting of XmlTag elements.
@@ -99,7 +99,6 @@ class TestDocElements {
     fun shouldBeAbleToAddXmlTagContent() {
         assertTrue(xmlDoc.listAllElements.contains(aTagWithContent))
     }
-
 
 
     // ------------------- Tests for Adding and Removing XmlElements in Document ------------------- \\
