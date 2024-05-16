@@ -6,12 +6,14 @@ import java.nio.file.Files
 class TestInference {
     // examples from the Project's phase 2 instructions
     private val c = ComponenteAvaliacao("Quizzes", 20)
+    private val inferredCTag = inference(c) as XmlTag
     private val f = FUC("M4310", "Programação Avançada", 6.0, "la la...",
         listOf(
             ComponenteAvaliacao("Quizzes", 20),
             ComponenteAvaliacao("Projeto", 80)
         )
     )
+    private val inferredFTag = inference(f) as XmlTag
     private val firstInferenceDoc = Document(rootElement = inference(f) as XmlTag)
 
     /**
@@ -20,8 +22,8 @@ class TestInference {
      */
     @Test
     fun shouldBeAbleToCreateXmlTagWithExpectedTagName() {
-        assertEquals("fuc", inference(f).name)
-        assertEquals("componente", inference(c).name)
+        assertEquals("fuc", inferredFTag.name)
+        assertEquals("componente", inferredCTag.name)
     }
 
     /**
@@ -29,11 +31,23 @@ class TestInference {
      */
     @Test
     fun shouldListTagAttributesCorrectly() {
-        val fucElement = inference(f) as XmlTag
-        assertEquals(mapOf(Pair("codigo", "M4310")), fucElement.getTagAttributes)
+        assertEquals(mapOf(Pair("codigo", "M4310")), inferredFTag.getTagAttributes)
+        assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", "20")), inferredCTag.getTagAttributes)
+    }
 
-        val componenteElement = inference(c) as XmlTag
-        assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", "20")), componenteElement.getTagAttributes)
+    /**
+     * Confirms that the inferred XmlTag's children are identified correctly.
+     */
+    @Test
+    fun shouldListInferredChildrenCorrectly() {
+        val fChildrenNames: MutableList<String> = mutableListOf()
+        val expectedChildren = listOf("nome", "ects", "avaliacao")
+        inferredFTag.children.forEach { fChildrenNames.add(it.name) }
+        assertEquals(expectedChildren, fChildrenNames)
+
+        val cChildrenNames: MutableList<String> = mutableListOf()
+        inferredCTag.children.forEach { cChildrenNames.add(it.name) }
+        assertEquals(emptyList<String>(), cChildrenNames)
     }
 
     /**
