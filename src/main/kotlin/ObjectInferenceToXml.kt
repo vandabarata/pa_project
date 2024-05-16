@@ -35,9 +35,7 @@ annotation class Ignore
 fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     // If the object passed is already a leaf tag (happens when these are processed recursively),
     // simply return it, as these don't need further processing
-    if (obj::class == XmlTagWithContent::class) {
-        return obj as XmlTagWithContent
-    }
+    if (obj is XmlTagWithContent) return obj
 
     // process this object as a XmlTag with possible attributes
     val tagName = getTagName(obj)
@@ -67,14 +65,13 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         }
     }
 
-    // this XmlTag is needed to further process its children, passing this one as their parent tag
+    // this XmlTag is needed to further process its children, passing itself as an XmlTag parent to them
     val finalTag = XmlTag(tagName, parent, tagAttributes = tagAttributes.toMap(mutableMapOf()))
 
     // process other fields that are children XmlElements
     objectFields.forEach {
         // Skip already processed fields
-        if (it.hasAnnotation<Ignore>()) return@forEach
-        if (it.hasAnnotation<TagAttribute>()) return@forEach
+        if (it.hasAnnotation<Ignore>() || it.hasAnnotation<TagAttribute>()) return@forEach
 
         val propertyName = it.name
         val propertyValue: Any = getPropertyValue(obj, propertyName)
