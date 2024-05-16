@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.io.File
+import java.nio.file.Files
 
 class TestInference {
     // examples from the Project's phase 2 instructions
@@ -33,15 +35,19 @@ class TestInference {
         assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", "20")), componenteElement.getTagAttributes)
     }
 
+    /**
+     * Confirms that the inference is working as expected, by creating a document using the inferred tag
+     * as the root element, and comparing it to a document of the nesting and tagging that's expected.
+     */
     @Test
-    fun inferenceShouldCreateRootTagCorrectly() {
-        val rootTag = inference(f) as XmlTag
+    fun inferenceShouldCreateDocumentCorrectly() {
+        val inferenceFirstFile = File("src/test/resources/FirstInferenceExampleFromMainProblem")
+        val testFirstInferenceFile = File("src/test/resources/testFirstInference")
 
-    }
+        Document(rootElement = inference(f) as XmlTag).writeXmlToFile(testFirstInferenceFile.toString())
 
-    @Test
-    fun shouldSomething() {
-        val testDoc = Document(rootElement = inference(f) as XmlTag)
-        testDoc.writeXmlToFile("src/test/resources/pleaseWork")
+        val mismatch = Files.mismatch(inferenceFirstFile.toPath(), testFirstInferenceFile.toPath())
+        // mismatch returns -1 if the files' contents match
+        assertEquals(-1, mismatch)
     }
 }
