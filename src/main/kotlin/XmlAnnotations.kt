@@ -43,8 +43,16 @@ fun <R> getPropertyValue(obj: Any, propertyName: String): R {
     return property.get(obj) as R
 }
 
+/**
+ * Infers any class into an XmlElement, through annotations and reflection.
+ *
+ * @param obj The class/ object to analyse and convert to XmlElement (XmlTag or XmlTagWithContent).
+ * @param parent This is null by default but when infering recursively, a parent XmlTag may be passed.
+ * @return Will return a leaf XmlElement (XmlTagWithContent) if one is passed, or a processed XmlTag otherwise.
+ */
 fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
-
+    // If the object passed is already a leaf tag (happens when these are processed recursively),
+    // simply return it, as these don't need further processing
     if (obj::class == XmlTagWithContent::class) {
         return obj as XmlTagWithContent
     }
@@ -90,7 +98,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         // if the code has gotten here, it means there's children tags
         hasChildren = true
 
-        // Process child composite tags (XmlTag) that may have their own children
+        // Add child composite tags (XmlTag) that may have their own children to a map of tags linking them a list of their own children
         if (propertyValue is List<*>) {
             val children: MutableList<Any> = mutableListOf()
             propertyValue.forEach { child ->
@@ -98,7 +106,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
             }
             childCompositeTags.putIfAbsent(propertyName, children)
         }
-        // Process child leaf tags (XmlTagWithContent)
+        // Add child leaf tags (XmlTagWithContent) to a list
         else leafTags.add(XmlTagWithContent(propertyName, finalTag, propertyValue.toString()))
     }
 
@@ -119,6 +127,12 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     return finalTag
 }
 
+/**
+ * Util function to infer a tag name from an object's class or annotation.
+ *
+ * @param obj Any class/ object.
+ * @return The tag name infered from that class.
+ */
 fun getTagName(obj: Any): String {
     return  if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
             else obj::class.simpleName!!.lowercase()
