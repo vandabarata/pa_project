@@ -26,36 +26,6 @@ annotation class Ignore
 
 // _______________________________ Objects Inference _______________________________ \\
 /**
- * Returns a KClass' list of properties by the order of their initialization.
- *
- * Taken from https://github.com/andre-santos-pt during Advanced Programming class.
- */
-val KClass<*>.orderedFields: List<KProperty<*>>
-    get() {
-        require(isData) { "instance must be data class" }
-        return primaryConstructor!!.parameters.map { p ->
-            declaredMemberProperties.find { it.name == p.name }!!
-        }
-    }
-
-/**
- * Reads the value of a KProperty.
- *
- * Taken from https://stackoverflow.com/a/35539628
- *
- * @param obj The object/ class we're retrieving the property value from.
- * @param propertyName The name of the property we want to get the value of.
- * @return The value of the property.
- */
-@Suppress("UNCHECKED_CAST")
-fun <R> getPropertyValue(obj: Any, propertyName: String): R {
-    val property = obj::class.members.first { it.name == propertyName } as KProperty1<Any, *>
-
-    // force invalid cast exception if incorrect type here
-    return property.get(obj) as R
-}
-
-/**
  * Infers any class into an XmlElement, through annotations and reflection.
  *
  * @param obj The class/ object to analyse and convert to XmlElement (XmlTag or XmlTagWithContent).
@@ -147,12 +117,37 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
  * @param obj Any class/ object.
  * @return The tag name infered from that class.
  */
-fun getTagName(obj: Any): String {
+private fun getTagName(obj: Any): String {
     return  if (obj::class.hasAnnotation<Tag>()) obj::class.findAnnotation<Tag>()!!.name
             else obj::class.simpleName!!.lowercase()
 }
 
+/**
+ * Returns a KClass' list of properties by the order of their initialization.
+ *
+ * Taken from https://github.com/andre-santos-pt during Advanced Programming class.
+ */
+private val KClass<*>.orderedFields: List<KProperty<*>>
+    get() {
+        require(isData) { "instance must be data class" }
+        return primaryConstructor!!.parameters.map { p ->
+            declaredMemberProperties.find { it.name == p.name }!!
+        }
+    }
 
+/**
+ * Reads the value of a KProperty.
+ *
+ * Taken from https://stackoverflow.com/a/35539628
+ *
+ * @param obj The object/ class we're retrieving the property value from.
+ * @param propertyName The name of the property we want to get the value of.
+ * @return The value of the property.
+ */
+@Suppress("UNCHECKED_CAST")
+private fun <R> getPropertyValue(obj: Any, propertyName: String): R {
+    val property = obj::class.members.first { it.name == propertyName } as KProperty1<Any, *>
 
-
-
+    // force invalid cast exception if incorrect type here
+    return property.get(obj) as R
+}
