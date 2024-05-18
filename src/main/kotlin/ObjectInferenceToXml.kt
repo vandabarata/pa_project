@@ -24,6 +24,15 @@ annotation class TagAttribute
 @Target(AnnotationTarget.PROPERTY)
 annotation class Ignore
 
+/**
+ * Annotation used to adapt string elements from an XmlElement
+ * into something else, according to the passed class
+ *
+ * @property adapterClass The class inside of which there's an adapter function to transform the string.
+ */
+@Target(AnnotationTarget.PROPERTY)
+annotation class XmlString(val adapterClass: KClass<*>)
+
 // _______________________________ Objects Inference _______________________________ \\
 /**
  * Infers any class into an XmlElement, through annotations and reflection.
@@ -60,6 +69,7 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 
         // Process attributes (fields with @TagAttribute annotation)
         if (it.hasAnnotation<TagAttribute>()) {
+            it.findAnnotation<XmlString>()
             tagAttributes.add(Pair(propertyName, propertyValue.toString()))
             return@forEach
         }
