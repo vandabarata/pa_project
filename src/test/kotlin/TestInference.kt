@@ -65,4 +65,43 @@ class TestInference {
         // mismatch returns -1 if the files' contents match
         assertEquals(-1, mismatch)
     }
+
+    /**
+     * Confirms that AddPercentage's transform is adding a % to a numeric string.
+     */
+    @Test
+    fun addPercentageShouldAddPercentageToString() {
+        val percent = AddPercentage().transformAttribute("50")
+        assertEquals("50%", percent)
+    }
+
+    /**
+     * Assess that a numerical attribute's value can be converted into percentage,
+     * using the approppriate annotation.
+     */
+    @Test
+    fun shouldBeAbleToConvertPercentageAsAnnotationInClass() {
+        // same as original class but with added @XmlString annotation to add percentage
+        data class ComponenteAvaliacao2 (
+            @TagAttribute
+            val nome: String,
+
+            @TagAttribute
+            @XmlString(AddPercentage::class)
+            val peso: Int)
+
+        val testPercentTag = inference(ComponenteAvaliacao2("Quizzes", 20)) as XmlTag
+        assertEquals(mapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")), testPercentTag.getTagAttributes)
+
+        // same as class above but the attribute "peso" uses value of type "Any"
+        data class TestComponent (
+            @TagAttribute
+            val nome: String,
+
+            @TagAttribute
+            @XmlString(AddPercentage::class)
+            val peso: Any)
+
+        assertThrows(IllegalArgumentException::class.java) { inference(TestComponent("", "anything")) }
+    }
 }

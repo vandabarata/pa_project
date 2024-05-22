@@ -31,7 +31,10 @@ annotation class Ignore
  * @property adapterClass The class inside of which there's an adapter function to transform the string.
  */
 @Target(AnnotationTarget.PROPERTY)
-annotation class XmlString(val adapterClass: KClass<*>)
+annotation class XmlString(val adapterClass: KClass<out XmlStringTransformer>)
+
+@Target(AnnotationTarget.CLASS)
+annotation class XmlAdapter(val adapterClass: KClass<out XmlElementAdapter>)
 
 // _______________________________ Objects Inference _______________________________ \\
 /**
@@ -66,11 +69,15 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
 
         val propertyName = it.name
         val propertyValue: Any = getPropertyValue(obj, propertyName)
+        var value = propertyValue.toString()
 
         // Process attributes (fields with @TagAttribute annotation)
         if (it.hasAnnotation<TagAttribute>()) {
-            it.findAnnotation<XmlString>()
-            tagAttributes.add(Pair(propertyName, propertyValue.toString()))
+
+            // Transform any attribute with the XmlString annotation
+            if (it.hasAnnotation<XmlString>()) value = it.findAnnotation<XmlString>()!!.adapterClass.createInstance().transformAttribute(value)
+
+            tagAttributes.add(Pair(propertyName, value))
             return@forEach
         }
     }
