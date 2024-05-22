@@ -116,6 +116,8 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
         }
     }
 
+    // Run adapters
+
     return finalTag
 }
 
