@@ -46,7 +46,7 @@ class Document(
      */
     fun addAttributeToTag(tagName: String, attrName: String, attrValue: String) {
         allElements.forEach {
-            if(it.name == tagName && it is XmlTag) it.addOrEditAttribute(attrName, attrValue)
+            if(it.name == tagName) it.addOrEditAttribute(attrName, attrValue)
         }
         updateElementList()
     }
@@ -59,7 +59,7 @@ class Document(
      */
     fun renameTagInDoc(oldName: String, newName: String) {
         docRoot.accept {
-            if (it is XmlTag && it.name == oldName) it.name = newName
+            if (it.name == oldName) it.name = newName
             true
         }
         updateElementList()
@@ -85,7 +85,7 @@ class Document(
          */
 
         docRoot.accept {
-            if (it is XmlTag && it.name == tagName) {
+            if (it.name == tagName && it.getTagAttributes.isNotEmpty()) {
                 val oldAttributes = it.getTagAttributes
                 val currentValue = oldAttributes.getValue(attrOldName)
 
@@ -107,7 +107,7 @@ class Document(
      */
     fun removeAttributesFromTagInDoc(tagName: String, attributeName: String) {
         docRoot.accept {
-            if (it is XmlTag && it.name == tagName) it.removeAttribute(attributeName)
+            if (it.name == tagName) it.removeAttribute(attributeName)
             true
         }
     }
@@ -136,17 +136,6 @@ class Document(
     }
 
     /**
-     * Overrides the toString method to show the Header/ XML Prolog,
-     * and the XML elements that compose it.
-     *
-     * @return a String showing the XML Prolog and all the XML elements, clearly separated.
-     */
-    override fun toString(): String = """
-        Header: $docHeader
-        XML Elements: $allElements
-    """.trimIndent()
-
-    /**
      * Turns this data structure into a valid XML file,
      * by adding the XML Prolog (docHeader) and the XmlElements to it,
      * formatted as XML.
@@ -158,7 +147,7 @@ class Document(
     }
 
     /**
-     * Ierates through the elements to find all the ones that match the given xpath.
+     * Iterates through the elements to find all the ones that match the given xpath.
      * This function finds all elements that correspond to the path,
      * even if not directly related to the elements before.
      * Example: a/b/c will find all b elements that descend from a,
