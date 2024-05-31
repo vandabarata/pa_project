@@ -275,7 +275,7 @@ ___
 ### Back to the Document
 If you don't specify an XML Prolog, a default one will be created for you, as described above.
 The imperative parameter you really need to pass onto the Document is the `rootElement` which must be an `XmlTag`.
-So, to create an XML Document from your `myRootElement`:
+So, to create an XML Document from your `myElement`:
 ```kotlin
 val myDoc = Document(rootElement = myElement as XmlTag)
 ```
