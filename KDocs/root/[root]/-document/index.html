@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Document</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            root
+                    </a>
+            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="root/main">JVM</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::/Document///PointingToDeclaration//-1617659094">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">[root]</a><span class="delimiter">/</span><span class="current">Document</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Document</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Document</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">header<span class="token operator">: </span><a href="../-xml-header/index.html">XmlHeader</a><span class="token operator"> = </span>XmlHeader()<span class="token punctuation">, </span></span><span class="parameter ">rootElement<span class="token operator">: </span><a href="../-xml-tag/index.html">XmlTag</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">Creates an entity called Document, which is the class that contains all elements that compose an XML Document.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>header</span></span></u></div></span></div><div><div class="title"><p class="paragraph">An element to represent the XML Prolog with the XML version and encoding being used.</p></div></div></div></div><div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>root</span><wbr></wbr><span><span>Element</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The XmlTag under where all other elements are nested.</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1418858011%2FConstructors%2F-1617659094" anchor-label="Document" id="1418858011%2FConstructors%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-document.html"><span><span>Document</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1418858011%2FConstructors%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">header<span class="token operator">: </span><a href="../-xml-header/index.html">XmlHeader</a><span class="token operator"> = </span>XmlHeader()<span class="token punctuation">, </span></span><span class="parameter ">rootElement<span class="token operator">: </span><a href="../-xml-tag/index.html">XmlTag</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">When being initialized, the Document creates a list with all elements under the root XmlTag, which is what's going to be manipulated going forward.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="721747400%2FProperties%2F-1617659094" anchor-label="docRoot" id="721747400%2FProperties%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="doc-root.html"><span>doc</span><wbr></wbr><span><span>Root</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="721747400%2FProperties%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="doc-root.html">docRoot</a><span class="token operator">: </span><a href="../-xml-tag/index.html">XmlTag</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1275318472%2FProperties%2F-1617659094" anchor-label="listAllElements" id="1275318472%2FProperties%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="list-all-elements.html"><span>list</span><wbr></wbr><span>All</span><wbr></wbr><span><span>Elements</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1275318472%2FProperties%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="list-all-elements.html">listAllElements</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-xml-element/index.html">XmlElement</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-982155856%2FFunctions%2F-1617659094" anchor-label="addAttributeToTag" id="-982155856%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-attribute-to-tag.html"><span>add</span><wbr></wbr><span>Attribute</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Tag</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-982155856%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-attribute-to-tag.html"><span class="token function">addAttributeToTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tagName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">attrName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">attrValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Given the name of a tag, an attribute name and an attribute value, adds this attribute to the XmlTag, if it's a part of the Document.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2074935867%2FFunctions%2F-1617659094" anchor-label="addElementToDoc" id="2074935867%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-element-to-doc.html"><span>add</span><wbr></wbr><span>Element</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Doc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2074935867%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-element-to-doc.html"><span class="token function">addElementToDoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">element<span class="token operator">: </span><a href="../-xml-element/index.html">XmlElement</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Adds an XmlElement to the Document's list of elements if its parentage is a part of the Document.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1618002817%2FFunctions%2F-1617659094" anchor-label="childTags" id="-1618002817%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../child-tags.html"><span>child</span><wbr></wbr><span><span>Tags</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1618002817%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">infix </span><span class="token keyword">fun </span><a href="index.html">Document</a><span class="token punctuation">.</span><a href="../child-tags.html"><span class="token function">childTags</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">action<span class="token operator">: </span><span class="token punctuation">(</span><a href="../-xml-element/index.html">XmlElement</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Returns only the main nested tags of the Document root.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2009383694%2FFunctions%2F-1617659094" anchor-label="getElementXmlFromXpath" id="2009383694%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-element-xml-from-xpath.html"><span>get</span><wbr></wbr><span>Element</span><wbr></wbr><span>Xml</span><wbr></wbr><span>From</span><wbr></wbr><span><span>Xpath</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2009383694%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-element-xml-from-xpath.html"><span class="token function">getElementXmlFromXpath</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">xpath<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Iterates through the elements to find all the ones that match the given xpath. This function finds all elements that correspond to the path, even if not directly related to the elements before. Example: a/b/c will find all b elements that descend from a,     and all c elements that descend from the b elements found before,     even if b isn't a direct child of a, and even if c isn't a direct child of b.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="273296335%2FFunctions%2F-1617659094" anchor-label="removeAttributesFromTagInDoc" id="273296335%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-attributes-from-tag-in-doc.html"><span>remove</span><wbr></wbr><span>Attributes</span><wbr></wbr><span>From</span><wbr></wbr><span>Tag</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Doc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="273296335%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remove-attributes-from-tag-in-doc.html"><span class="token function">removeAttributesFromTagInDoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tagName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">attributeName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes an attribute from a certain tag in the Document.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1600271595%2FFunctions%2F-1617659094" anchor-label="removeElementsFromDoc" id="-1600271595%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-elements-from-doc.html"><span>remove</span><wbr></wbr><span>Elements</span><wbr></wbr><span>From</span><wbr></wbr><span><span>Doc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1600271595%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="remove-elements-from-doc.html"><span class="token function">removeElementsFromDoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">elementName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Removes the XmlElement from its parent's children list, as well as from the Document's list of elements. If the element is an XmlTag, makes sure to clear its children as well.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1124373610%2FFunctions%2F-1617659094" anchor-label="renameAttributesInDoc" id="1124373610%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rename-attributes-in-doc.html"><span>rename</span><wbr></wbr><span>Attributes</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Doc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1124373610%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="rename-attributes-in-doc.html"><span class="token function">renameAttributesInDoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tagName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">attrOldName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">attrNewName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Renames a certain attribute in the Document. This only renames the attribute if:</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-455099128%2FFunctions%2F-1617659094" anchor-label="renameTagInDoc" id="-455099128%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rename-tag-in-doc.html"><span>rename</span><wbr></wbr><span>Tag</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Doc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-455099128%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="rename-tag-in-doc.html"><span class="token function">renameTagInDoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">oldName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">newName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Finds XmlTags with the oldName and renames them with the given newName.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="675516443%2FFunctions%2F-1617659094" anchor-label="writeXmlToFile" id="675516443%2FFunctions%2F-1617659094" data-filterable-set="root/main"></a>
+          <div class="table-row" data-filterable-current="root/main" data-filterable-set="root/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-xml-to-file.html"><span>write</span><wbr></wbr><span>Xml</span><wbr></wbr><span>To</span><wbr></wbr><span><span>File</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="675516443%2FFunctions%2F-1617659094"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="root/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="write-xml-to-file.html"><span class="token function">writeXmlToFile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">file<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Turns this data structure into a valid XML file, by adding the XML Prolog (docHeader) and the XmlElements to it, formatted as XML.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
