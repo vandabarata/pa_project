@@ -46,7 +46,7 @@ class Document(
      */
     fun addAttributeToTag(tagName: String, attrName: String, attrValue: String) {
         allElements.forEach {
-            if(it.name == tagName && it is XmlTag) it.addOrEditAttribute(attrName, attrValue)
+            if(it.name == tagName) it.addOrEditAttribute(attrName, attrValue)
         }
         updateElementList()
     }
@@ -59,7 +59,7 @@ class Document(
      */
     fun renameTagInDoc(oldName: String, newName: String) {
         docRoot.accept {
-            if (it is XmlTag && it.name == oldName) it.name = newName
+            if (it.name == oldName) it.name = newName
             true
         }
         updateElementList()
@@ -107,7 +107,7 @@ class Document(
      */
     fun removeAttributesFromTagInDoc(tagName: String, attributeName: String) {
         docRoot.accept {
-            if (it is XmlTag && it.name == tagName) it.removeAttribute(attributeName)
+            if (it.name == tagName) it.removeAttribute(attributeName)
             true
         }
     }
