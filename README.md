@@ -8,6 +8,7 @@ ___
 
 ## How it works
 This framework is able to create XML Documents from a root XML Tag, along with its nested elements.
+To create XML Elements, it's able to adapt classes created by the user, given the use of certain annotations, as described below.
 
 [![](https://img.shields.io/badge/annotations-summary-black?style=for-the-badge&logo=CodeFactor&logoColor=ffffff)](#annotations) \
 <sub><sup>^ Click to go straight to all the annotations</sup></sub>
