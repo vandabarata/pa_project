@@ -73,7 +73,7 @@ data class ComponenteAvaliacao (
 ```
 **Note**: This annotation can only be applied to classes, so if you want a different tag name, you need to create a class for it.
 
-#### _**TL;DR**_: Add `@Tag("name")` to the tag's class
+#### _TL;DR_: Add `@Tag("name")` to the tag's class
 
 ### <u>I want to transform an attribute but not change it inside my class</u>
 What if I told you _there's an annotation for that too_? 
@@ -113,6 +113,6 @@ which would then result in "converting" our Int values into a percentage, like s
 ```
 All this without changing the original class itself, only with an annotation. Feel free to be creative as long as you call your method `transformAttribute` and return the attribute as a String.
 
-#### _**TL;DR**_: Add `@XmlString(YourXmlStringAdapter::class)` to the attribute
+#### _TL;DR_: Add `@XmlString(YourXmlStringAdapter::class)` to the attribute
 
 
