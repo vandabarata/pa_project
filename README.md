@@ -8,6 +8,12 @@ ___
 
 ## How it works
 This library is able to create XML Documents from a root XML Tag, along with its nested elements.
+
+<details open>
+    <summary>Brief XML reminder</summary>
+    Using this framework assumes basic XML knowledge. [This page](https://www.w3schools.com/xml/xml_syntax.asp) offers a reminder of basic notions, in case you need that.
+</details>
+
 All you need to do is create a class that you intend to use as your root tag.
 Then, as properties of the class, you can have other nested tags or tag attributes.
 
