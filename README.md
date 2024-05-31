@@ -17,7 +17,7 @@ This library is able to create XML Documents from a root XML Tag, along with its
 All you need to do is create a class that you intend to use as your root tag.
 Then, as properties of the class, you can have other nested tags or tag attributes.
 
-Example:
+**Example** \
 You want this as a final XML Document (excluding the prolog for now)
 ```xml
 <fuc codigo="M4310">
@@ -77,9 +77,49 @@ data class ComponenteAvaliacao (
     @TagAttribute
     val peso: Int)
 ```
+By default, the tag name will be a lowercase version of the class name, you should use this annotation if you want it to be different. \
 **Note**: This annotation can only be applied to classes, so if you want a different tag name, you need to create a class for it.
 
 #### _TL;DR_: Add `@Tag("name")` to the tag's class
+
+### <u>I want to ignore certain fields of my class</u>
+Let's imagine you want to convert your class into an XML Element but you don't want to convert everything into a nested tag or an attribute.
+Have you guessed it yet? _There's an annotation for that_: `@Ignore`
+
+Remember our old class? Let's add an extra field called `observacoes`
+```kotlin
+data class FUC (
+    @TagAttribute
+    val codigo: String,
+    val nome: String,
+    val ects: Double,
+    @Ignore
+    val observacoes: String,
+    val avaliacao: List<Componente>
+)
+```
+Now, when you create an object from this, it can be like
+```kotlin
+val example = FUC("M4310", "Programação Avançada", 6.0, "your field to be ignored",
+    listOf(
+        Componente("Quizzes", "20"),
+        Componente("Projeto", "80")
+    )
+)
+```
+and it will be translated into this anyway
+```xml
+<fuc codigo="M4310">
+    <nome>Programação Avançada</nome>
+    <ects>6.0</ects>
+    <avaliacao>
+        <componente nome="Quizzes" peso="20"/>
+        <componente nome="Projeto" peso="80"/>
+    </avaliacao>
+</fuc>
+```
+
+#### _TL;DR_: Add `@Ignore` to the property to be ignored
 
 ### <u>I want to transform an attribute but not change it inside my class</u>
 What if I told you _there's an annotation for that too_? 
