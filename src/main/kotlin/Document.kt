@@ -140,19 +140,14 @@ class Document(
      * by adding the XML Prolog (docHeader) and the XmlElements to it,
      * formatted as XML.
      *
-     * @param file The path to the file to be created, in a String format
+     * @param file The path to the file to be created, in a String format.
      */
     fun writeXmlToFile(file: String) {
         File(file).writeText(docHeader + "\n" + docRoot.turnToXml().trimEnd())
     }
 
     /**
-     * Iterates through the elements to find all the ones that match the given xpath.
-     * This function finds all elements that correspond to the path,
-     * even if not directly related to the elements before.
-     * Example: a/b/c will find all b elements that descend from a,
-     *          and all c elements that descend from the b elements found before,
-     *          even if b isn't a direct child of a, and even if c isn't a direct child of b.
+     * Refer to {@link #getElementXmlFromXpath(String) its wrapper function} for details.
      *
      * @param xpath The xpath-like path to find the elements. Example: root/child/someOtherChild
      * @param startingElement This is the Document Root by default. Shouldn't need to be changed.
@@ -198,15 +193,24 @@ class Document(
     }
 
     /**
+     * Iterates through the elements to find all the ones that match the given xpath.
+     * This function finds all elements that correspond to the path,
+     * even if not directly related to the elements before.
+     * Example: a/b/c will find all b elements that descend from a,
+     *          and all c elements that descend from the b elements found before,
+     *          even if b isn't a direct child of a, and even if c isn't a direct child of b.
+     *
+     * @param xpath The intended path for the elements to retrieve.
+     * @return A List with the XML Elements formatted as their XML form in Strings.
+     */
+    fun getElementXmlFromXpath(xpath: String): List<String> {
+    /**
      * Wrapper function for the real one giving out the elements list.
      * Serves for processing the elements and returning them on their XML form.
      * This also prevents the user from interfering with the other parameters
      * of the function it's wrapping, as they shouldn't be changed.
-     *
-     * @param xpath The intended path for the elements to retrive.
-     * @return A List with the XML Elements formatted as their XML form in Strings.
      */
-    fun getElementXmlFromXpath(xpath: String): List<String> {
+
         val elementList = getElementsFromMicroXpath(xpath)
         val xmlList = mutableListOf<String>()
         elementList.forEach {
