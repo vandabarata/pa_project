@@ -9,7 +9,7 @@ ___
 ## How it works
 This library is able to create XML Documents from a root XML Tag, along with its nested elements.
 
-<details open>
+<details>
     <summary>Brief XML reminder</summary>
     Using this framework assumes basic XML knowledge. <a href="//www.w3schools.com/xml/xml_syntax.asp">This page</a> offers a reminder of basic notions, in case you need that.
 </details>
