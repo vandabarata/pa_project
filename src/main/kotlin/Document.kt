@@ -147,7 +147,7 @@ class Document(
     }
 
     /**
-     * Ierates through the elements to find all the ones that match the given xpath.
+     * Iterates through the elements to find all the ones that match the given xpath.
      * This function finds all elements that correspond to the path,
      * even if not directly related to the elements before.
      * Example: a/b/c will find all b elements that descend from a,

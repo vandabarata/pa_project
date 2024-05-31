@@ -7,7 +7,10 @@ ___
 ![](https://img.shields.io/github/last-commit/vandabarata/pa_project/main?logo=github)
 
 ## How it works
-This library is able to create XML Documents from a root XML Tag, along with its nested elements.
+This framework is able to create XML Documents from a root XML Tag, along with its nested elements.
+
+[![](https://img.shields.io/badge/annotations-summary-black?style=for-the-badge&logo=CodeFactor&logoColor=ffffff)](#annotations) \
+<sub><sup>^ Click to go straight to all the annotations</sup></sub>
 
 <details>
     <summary>Brief XML reminder</summary>
@@ -237,3 +240,81 @@ to
 ___
 #### _TL;DR_: Add `@XmlAdapter(YourXmlElementAdapter::class)` to the class you want to transform post mapping
 ___
+
+## All the annotations
+<div id='annotations'></div>
+
+So, a quick summary:
+- `@Tag("intended name")` applied to classes where you want a different tag name
+- `@TagAttribute` for each field inside the class you want to use as a tag attribute
+- `@Ignore` for any field you don't want to process as part of the XML Element
+- `@XmlString(YourXmlStringTransformer::class)` to transform any attribute as you see fit (use `transformAttribute` as method)
+- `@XmlAdapter(YourXmlElementAdapter::class)` to change the class as an XML Element after it's been initially processed (use `freeTransform` as method)
+___
+
+## But how do I create an XML Document?
+From the class you just inferred, you get an XmlElement returned to you.
+If you cast it as an XmlTag, you can use it as the root tag for your Document.
+A `Document` class receives a `header`(the XML Prolog) and a `rootElement`.
+
+Let's start with your object first. Imagine you created an object, based on your annotated class, called `myObj`.
+To convert it to an XmlElement, all you need to do is 
+```kotlin
+val myElement = inference(myObj)
+```
+___
+### Do you want to use a custom XML Prolog?
+By default, the XML Prolog is `<?xml version="1.1" encoding="UTF-32"?>` if you just create it like
+```kotlin
+val defaultProlog = XmlHeader()
+```
+or by not specifying it at all, when creating the Document.
+
+That said, if you wish to specify another XML version, or another encoding, you can do so, as the constructor takes `version` and `encoding` as parameters.
+___
+### Back to the Document
+If you don't specify an XML Prolog, a default one will be created for you, as described above.
+The imperative parameter you really need to pass onto the Document is the `rootElement` which must be an `XmlTag`.
+So, to create an XML Document from your `myRootElement`:
+```kotlin
+val myDoc = Document(rootElement = myElement as XmlTag)
+```
+### Now what?
+Here's what you can do with your shiny new XML Document (refer to the KDocs for more specific info on each method):
+<details>
+    <summary>addElementToDoc</summary>
+     Adds an XmlElement to the Document's list of elements if its parentage is a part of the Document.
+</details> 
+<details>
+    <summary>addAttributeToTag</summary>
+     Given the name of a tag, an attribute name and an attribute value, adds this attribute to the XmlTag, if it's a part of the Document.
+</details>
+<details>
+    <summary>renameTagInDoc</summary>
+     Finds XmlTags with the oldName and renames them with the given newName.
+</details> 
+<details>
+    <summary>renameAttributesInDoc</summary>
+    Renames a certain attribute in the Document. This only renames the attribute if: <br>
+    - The tag to which it belongs exists in the document, <br>
+    - The given old name of the attribute exists in the map of attributes of that tag.
+</details>
+<details>
+    <summary>removeAttributesFromTagInDoc</summary>
+    Removes an attribute from a certain tag in the Document.
+</details>
+<details>
+    <summary>removeElementsFromDoc</summary>
+     Removes the XmlElement from its parent's children list, as well as from the Document's list of elements. <br>
+     If the element is an XmlTag, makes sure to clear its children as well.
+</details>
+<details>
+    <summary>getElementXmlFromXpath</summary>
+     Iterates through the elements to find all the ones that match the given xpath. <br>
+     This function finds all elements that correspond to the path, even if not directly related to the elements before. <br>
+     Example: a/b/c will find all b elements that descend from a, and all c elements that descend from the b elements found before, even if b isn't a direct child of a, and even if c isn't a direct child of b.
+</details>
+<details>
+    <summary>writeXmlToFile</summary>
+    Turns this data structure into a valid XML file,by adding the XML Prolog (docHeader) and the XmlElements to it, formatted as XML.
+</details>
