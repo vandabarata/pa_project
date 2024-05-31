@@ -79,8 +79,9 @@ data class ComponenteAvaliacao (
 ```
 By default, the tag name will be a lowercase version of the class name, you should use this annotation if you want it to be different. \
 **Note**: This annotation can only be applied to classes, so if you want a different tag name, you need to create a class for it.
-
+___
 #### _TL;DR_: Add `@Tag("name")` to the tag's class
+___
 
 ### <u>I want to ignore certain fields of my class</u>
 Let's imagine you want to convert your class into an XML Element but you don't want to convert everything into a nested tag or an attribute.
@@ -118,9 +119,9 @@ and it will be translated into this anyway
     </avaliacao>
 </fuc>
 ```
-
+___
 #### _TL;DR_: Add `@Ignore` to the property to be ignored
-
+___
 ### <u>I want to transform an attribute but not change it inside my class</u>
 What if I told you _there's an annotation for that too_? 
 This framework comes with an interface you can use, called `XmlStringTransformer`.
@@ -158,7 +159,7 @@ which would then result in "converting" our Int values into a percentage, like s
 </fuc>
 ```
 All this without changing the original class itself, only with an annotation. Feel free to be creative as long as you call your method `transformAttribute` and return the attribute as a String.
-
+___
 #### _TL;DR_: Add `@XmlString(YourXmlStringAdapter::class)` to the attribute
-
+___
 
