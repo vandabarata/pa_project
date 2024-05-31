@@ -178,7 +178,7 @@ All this without changing the original class itself, only with an annotation. Fe
 <div id='transform-attr'></div>
 
 ___
-#### _TL;DR_: Add `@XmlString(YourXmlStringAdapter::class)` to the attribute
+#### _TL;DR_: Add `@XmlString(YourXmlStringTransformer::class)` to the attribute
 ___
 ### <u>I want to transform my XmlElement after mapping everything</u>
 Even if it seems like a weird request, I've also added an annotation for that!
