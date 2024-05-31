@@ -85,7 +85,7 @@ class Document(
          */
 
         docRoot.accept {
-            if (it is XmlTag && it.name == tagName) {
+            if (it.name == tagName && it.getTagAttributes.isNotEmpty()) {
                 val oldAttributes = it.getTagAttributes
                 val currentValue = oldAttributes.getValue(attrOldName)
 

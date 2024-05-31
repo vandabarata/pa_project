@@ -9,6 +9,7 @@
 sealed interface XmlElement {
     var name: String
     val parent: XmlTag?
+    var tagAttributes: MutableMap<String, String>
 
     /**
      * Operation to accept visitor elements, representing a visitor interface through lambdas.
@@ -19,6 +20,41 @@ sealed interface XmlElement {
      */
     fun accept(visitor: (XmlElement) -> Boolean) {
         visitor(this)
+    }
+
+    val getTagAttributes: MutableMap<String, String>
+        get() = tagAttributes
+
+    /**
+     * User provides an attribute key and an attribute value, which is then added to the attribute map,
+     * in case it doesn't exist, or edited, in case the key already exists.
+     *
+     * @param attributeKey This key is a String that represents the attribute's name to add or edit.
+     * @param attributeValue The value that's going to be added or updated onto an existing attribute.
+     */
+    fun addOrEditAttribute(attributeKey: String, attributeValue: String) {
+        this.tagAttributes[attributeKey.replace(" ", "")] = attributeValue
+    }
+
+    /**
+     * Replaces the old attributes map with a new one. This is especially useful when the user needs to rename
+     * attribute names, since these serve as map keys and can't be renamed otherwise.
+     *
+     * @param newAttributes The new attributes of this XmlTag, mapped by name and value.
+     */
+    fun changeAttributesMap(newAttributes: MutableMap<String, String>) {
+        this.tagAttributes = newAttributes
+    }
+
+    /**
+     * Remove attribute from this XmlTag's attributes, if it already exists.
+     * @throws IllegalArgumentException if the given attribute key isn't a part of this tag's attributes.
+     *
+     * @param attributeKey The name of the attribute to be removed
+     */
+    fun removeAttribute(attributeKey: String) {
+        if (tagAttributes.containsKey(attributeKey)) this.tagAttributes.remove(attributeKey)
+        else throw IllegalArgumentException("Such attribute isn't a part of this XML Tag.")
     }
 
     /**
@@ -46,7 +82,7 @@ sealed interface XmlElement {
 data class XmlTag(
     override var name: String,
     override val parent: XmlTag? = null,
-    private var tagAttributes: MutableMap<String, String> = mutableMapOf()
+    override var tagAttributes: MutableMap<String, String> = mutableMapOf()
 ) : XmlElement {
     val children: MutableList<XmlElement> = mutableListOf()
 
@@ -85,41 +121,6 @@ data class XmlTag(
                 it.accept(visitor)
             }
     }
-
-    /**
-     * User provides an attribute key and an attribute value, which is then added to the attribute map,
-     * in case it doesn't exist, or edited, in case the key already exists.
-     *
-     * @param attributeKey This key is a String that represents the attribute's name to add or edit.
-     * @param attributeValue The value that's going to be added or updated onto an existing attribute.
-     */
-    fun addOrEditAttribute(attributeKey: String, attributeValue: String) {
-        this.tagAttributes[attributeKey.replace(" ", "")] = attributeValue
-    }
-
-    /**
-     * Replaces the old attributes map with a new one. This is especially useful when the user needs to rename
-     * attribute names, since these serve as map keys and can't be renamed otherwise.
-     *
-     * @param newAttributes The new attributes of this XmlTag, mapped by name and value.
-     */
-    fun changeAttributesMap(newAttributes: MutableMap<String, String>) {
-        this.tagAttributes = newAttributes
-    }
-
-    /**
-     * Remove attribute from this XmlTag's attributes, if it already exists.
-     * @throws IllegalArgumentException if the given attribute key isn't a part of this tag's attributes.
-     *
-     * @param attributeKey The name of the attribute to be removed
-     */
-    fun removeAttribute(attributeKey: String) {
-        if (tagAttributes.containsKey(attributeKey)) this.tagAttributes.remove(attributeKey)
-        else throw IllegalArgumentException("Such attribute isn't a part of this XML Tag.")
-    }
-
-    val getTagAttributes: MutableMap<String, String>
-            get() = tagAttributes
 
     /**
      * Formats an XmlTag and its children into a proper XML format.
@@ -183,12 +184,15 @@ data class XmlTag(
  * @property name The text to be presented as the tag name.
  * @property parent The tag under which this is nested.
  * @property content The actual content to be shown inbetween the tags.
+ * @property tagAttributes XmlTags can have attributes. This is a map of keys with associated values, all as Strings.
+ * Considered empty by default, as this isn't mandatory.
  * @constructor Adds this tag content to an existing tag or nested tags (parent element(s)).
  */
 data class XmlTagWithContent(
     override var name: String,
     override val parent: XmlTag,
-    val content: String
+    val content: String,
+    override var tagAttributes: MutableMap<String, String> = mutableMapOf()
 ) : XmlElement {
 
     init {
