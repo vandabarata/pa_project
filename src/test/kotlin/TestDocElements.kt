@@ -43,13 +43,13 @@ class TestDocElements {
 
     // XmlTags/ Composite Elements
     private val rootTag = XmlTag("rootTag")
-    private val rootChildTag = XmlTag("childTag", rootTag)
-    private val anotherRootChildTag = XmlTag("anotherChildTag", rootTag)
-    private val childOfAnotherRootChildTag = XmlTag("anotherChildTagChild", anotherRootChildTag)
-    private val childOfRootChildTag = XmlTag("deepestTag", rootChildTag)
-    private val childlessTag = XmlTag("childlessTag", anotherRootChildTag)
-    private val someTagWithAttributes = XmlTag("someTagWithAttributes", rootTag,
-        mutableMapOf(Pair("An Attribute", "With a Value"), Pair("Yet Another Attribute", "With Another Value")))
+    private val rootChildTag = rootTag + "childTag"
+    private val anotherRootChildTag = rootTag + "anotherChildTag"
+    private val childOfAnotherRootChildTag = anotherRootChildTag + "anotherChildTagChild"
+    private val childOfRootChildTag = rootChildTag + "deepestTag"
+    private val childlessTag = anotherRootChildTag + "childlessTag"
+    private val someTagWithAttributes = (rootTag + "someTagWithAttributes")
+        .changeAttributesMap(mutableMapOf(Pair("An Attribute", "With a Value"), Pair("Yet Another Attribute", "With Another Value")))
     private val randomTag = XmlTag("random")
 
     // XmlTagContent / Leaf Elements
@@ -166,8 +166,8 @@ class TestDocElements {
     @Test
     fun shouldBeAbleToAddElementToDoc() {
         val rootTagToBeAdded = XmlTag("rootTagToBeAdded")
-        val randomTagChild = XmlTag("randomChild", randomTag)
-        val normalTagToBeAdded = XmlTag("normalTagToBeAdded", childOfAnotherRootChildTag)
+        val randomTagChild = randomTag + "randomChild"
+        val normalTagToBeAdded = childOfAnotherRootChildTag + "normalTagToBeAdded"
         val contentToBeAdded = XmlTagWithContent("content", normalTagToBeAdded, "content of content")
 
         assertThrows(IllegalArgumentException::class.java) { xmlDoc.addElementToDoc(rootTagToBeAdded) }
@@ -356,17 +356,18 @@ class TestDocElements {
     private val fuc1 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "M4310")))
     private val fuc1texto = XmlTagWithContent("nome", parent = fuc1, "Programação Avançada")
     private val fuc1ectstexto = XmlTagWithContent("ects", parent = fuc1, "6.0")
-    private val avaliacao = XmlTag("avaliacao", parent = fuc1)
-    private val componenteavaliacao1 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
-    private val componenteavaliacao2 = XmlTag("componente", parent = avaliacao, tagAttributes = mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
+    private val avaliacao = fuc1 + "avaliacao"
+    private val componenteavaliacao1 = (avaliacao + "componente").changeAttributesMap(mutableMapOf(Pair("nome", "Quizzes"), Pair("peso", "20%")))
+    private val componenteavaliacao2 = (avaliacao + "componente").changeAttributesMap(mutableMapOf(Pair("nome", "Projeto"), Pair("peso", "80%")))
+
 
     private val fuc2 = XmlTag("fuc", parent = plano, tagAttributes = mutableMapOf(Pair("codigo", "03782")))
     private val fuc2texto = XmlTagWithContent("nome", parent = fuc2, "Dissertação")
     private val fuc2ectstexto = XmlTagWithContent("ects", parent = fuc2, "42.0")
-    private val avaliacao2 = XmlTag("avaliacao", parent = fuc2)
-    private val componenteavaliacao21 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Dissertação"), Pair("peso", "60%")))
-    private val componenteavaliacao22 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Apresentação"), Pair("peso", "20%")))
-    private val componenteavaliacao23 = XmlTag("componente", parent = avaliacao2, tagAttributes = mutableMapOf(Pair("nome", "Discussão"), Pair("peso", "20%")))
+    private val avaliacao2 = fuc2 + "avaliacao"
+    private val componenteavaliacao21 = (avaliacao2 + "componente").changeAttributesMap(mutableMapOf(Pair("nome", "Dissertação"), Pair("peso", "60%")))
+    private val componenteavaliacao22 = (avaliacao2 + "componente").changeAttributesMap(mutableMapOf(Pair("nome", "Apresentação"), Pair("peso", "20%")))
+    private val componenteavaliacao23 = (avaliacao2 + "componente").changeAttributesMap(mutableMapOf(Pair("nome", "Discussão"), Pair("peso", "20%")))
 
     private val testDoc = Document(XmlHeader(), plano)
 
@@ -420,5 +421,36 @@ class TestDocElements {
 
         val invalidPathList = testDoc.getElementXmlFromXpath("not.a.valid.path")
         assertTrue(invalidPathList.isEmpty())
+    }
+
+    /**
+     * Confirms that the DSL extension of Document, childTags, returns only the root's direct children tags.
+     */
+    @Test
+    fun childTagsHelperDSLShouldReturnRootTagsChildren() {
+        val childTagsList = mutableListOf<String>()
+        val expectedChildren = mutableListOf("curso", "fuc", "fuc")
+        testDoc.childTags { childTagsList.add(it.name) }
+        assertEquals(expectedChildren, childTagsList)
+    }
+
+    /**
+     * Confirms that it's possible to get a child element by using the get operator on an XmlTag.
+     */
+    @Test
+    fun tagGetShouldReturnChildElement() {
+        val child = plano["curso"]
+        assertEquals(curso, child)
+    }
+
+    /**
+     * Confirms that it's possible to add an empty child tag to an XmlTag with the plus operator.
+     */
+    @Test
+    fun shouldBeAbleToAddChildWithPlus() {
+        plano + "newChild"
+        val childrenNames = mutableListOf<String>()
+        plano.children.forEach { childrenNames.add(it.name) }
+        assertTrue(childrenNames.contains("newChild"))
     }
 }
