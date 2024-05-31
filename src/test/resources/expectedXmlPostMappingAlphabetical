@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fuc1 codigo="M4310">
+	<anatomia>último algo</anatomia>
+	<avaliacao>
+		<componente nome="Quizzes" peso="20"/>
+		<componente nome="Projeto" peso="80"/>
+	</avaliacao>
+	<cenas>algo</cenas>
+	<ects>6.0</ects>
+	<nome>Programação Avançada</nome>
+</fuc1>

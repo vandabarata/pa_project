@@ -117,6 +117,9 @@ fun inference(obj: Any, parent: XmlTag? = null): XmlElement {
     }
 
     // Run adapters
+    if (obj::class.hasAnnotation<XmlAdapter>()) run {
+        obj::class.findAnnotation<XmlAdapter>()!!.adapterClass.createInstance().freeTransform(finalTag)
+    }
 
     return finalTag
 }

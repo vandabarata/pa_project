@@ -18,7 +18,7 @@ All you need to do is create a class that you intend to use as your root tag.
 Then, as properties of the class, you can have other nested tags or tag attributes.
 
 **Example** \
-You want this as a final XML Document (excluding the prolog for now)
+Let's say you want this as a final XML Document (excluding the prolog for now)
 ```xml
 <fuc codigo="M4310">
     <nome>Programação Avançada</nome>
@@ -66,6 +66,12 @@ val example = FUC("M4310", "Programação Avançada", 6.0,
 This is the base "vanilla" behaviour you can get. Let's get onto other customizations you can do.
 
 ## The fun stuff
+Click the indexes for a quick TL;DR of each section 
+- [Different tag name](#tag-name)
+- [Ignore fields](#ignore)
+- [Transform attributes](#transform-attr)
+- [Transform elements](#transform-elem)
+
 ### <u>I want my tag's name to differ from its class name</u>
 There's an annotation for that! Imagine you still want the tag to be named `componente` but you want the class name to be more descriptive.
 Not a problem. Just add the annotation `@Tag` passing the intended name as a parameter, like `@Tag("intended name")`.
@@ -79,6 +85,8 @@ data class ComponenteAvaliacao (
 ```
 By default, the tag name will be a lowercase version of the class name, you should use this annotation if you want it to be different. \
 **Note**: This annotation can only be applied to classes, so if you want a different tag name, you need to create a class for it.
+<div id='tag-name'></div> 
+
 ___
 #### _TL;DR_: Add `@Tag("name")` to the tag's class
 ___
@@ -119,6 +127,9 @@ and it will be translated into this anyway
     </avaliacao>
 </fuc>
 ```
+<div id='ignore'></div> 
+
+
 ___
 #### _TL;DR_: Add `@Ignore` to the property to be ignored
 ___
@@ -136,9 +147,14 @@ Here's the gist of what it looks like, so you can make your own
 
 ```kotlin
 class AddPercentage: XmlStringTransformer {
-    override fun transformAttribute(attribute: Any): String {  }
+    override fun transformAttribute(attribute: Any): String {
+        if (attribute.toString().toIntOrNull() != null || attribute.toString().toDoubleOrNull() != null) return "$attribute%"
+        else throw IllegalArgumentException("Attribute can't be converted to percentage")
+    }
 }
 ```
+In a nutshell, it accepts any value that can be parsed into an Int or Double, and adds a percentage to it.
+
 The way this can be used, based on our former examples, is
 ```kotlin
 data class Componente (
@@ -159,7 +175,65 @@ which would then result in "converting" our Int values into a percentage, like s
 </fuc>
 ```
 All this without changing the original class itself, only with an annotation. Feel free to be creative as long as you call your method `transformAttribute` and return the attribute as a String.
+<div id='transform-attr'></div>
+
 ___
 #### _TL;DR_: Add `@XmlString(YourXmlStringAdapter::class)` to the attribute
 ___
+### <u>I want to transform my XmlElement after mapping everything</u>
+Even if it seems like a weird request, I've also added an annotation for that!
+The interface to be used for this is `XmlElementAdapter`.
+```kotlin
+interface XmlElementAdapter {
+    fun freeTransform(element: XmlElement)
+}
+```
+You can pass a class implementing this interface into the annotation of a class you wish to transform.
+Out of the box, I've decided to add an `AlphabeticalAdapter` as an example.
+The method your adapter class should implement is `freeTransform`. Here's the gist of my own implementation:
+```kotlin
+class AlphabeticalAdapter: XmlElementAdapter {
+    override fun freeTransform(element: XmlElement) {
+        if (element is XmlTag && element.children.isNotEmpty()) {
+            element.accept {
+                orderChildTagsAlphabetically(it)
+                true
+            }
+        }
+    }
 
+    private fun orderChildTagsAlphabetically(element: XmlElement) {
+        if (element is XmlTag && element.children.isNotEmpty()) element.children.sortBy { it.name }
+    }
+}
+```
+You can copy the `freeTransform` method above, create your adapter class and then invoke any method you create. 
+Or do something completely different, I'm not the boss of you. This is just an example.
+
+In the end, the XML would be converted from
+```xml
+<fuc codigo="M4310">
+    <nome>Programação Avançada</nome>
+    <ects>6.0</ects>
+    <avaliacao>
+        <componente nome="Quizzes" peso="20"/>
+        <componente nome="Projeto" peso="80"/>
+    </avaliacao>
+</fuc>
+```
+to
+```xml
+<fuc codigo="M4310">
+    <avaliacao>
+        <componente nome="Quizzes" peso="20"/>
+        <componente nome="Projeto" peso="80"/>
+    </avaliacao>
+    <ects>6.0</ects>
+    <nome>Programação Avançada</nome>
+</fuc>
+```
+<div id='transform-elem'></div>
+
+___
+#### _TL;DR_: Add `@XmlAdapter(YourXmlElementAdapter::class)` to the class you want to transform post mapping
+___

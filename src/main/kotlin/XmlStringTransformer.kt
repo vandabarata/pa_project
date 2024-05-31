@@ -1,7 +1,11 @@
+/**
+ * Interface to be used as basis for classes that allow
+ * the client to transform attributes with the `@XmlString` annotation.
+ */
 interface XmlStringTransformer {
     /**
-     * Interface to be used as basis for classes that allow
-     * the client to transform attributes with the `@XmlString` annotation.
+     * The method that allows the user to transform any attribute,
+     * according to their class' implementation.
      *
      * @param attribute Any kind of parameter type.
      * @return Returns the attribute as a String after transforming it.
